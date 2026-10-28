@@ -733,6 +733,12 @@ h1 small { display: block; font-family: var(--f-mono); font-weight: 400; font-si
 .btn.big { width: 100%; padding: 12px; font-size: 15px; font-family: var(--f-display); font-stretch: 90%; letter-spacing: .01em; }
 .btn:disabled { opacity: .45; cursor: not-allowed; }
 .btn.on { background: var(--ink); color: var(--surface); border-color: var(--ink); }
+.modes { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; padding: 4px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); }
+.modes button { font: inherit; font-weight: 600; font-size: 13px; padding: 9px 8px; border: 0; border-radius: 6px; background: transparent; color: var(--muted); cursor: pointer; line-height: 1.25; }
+.modes button[aria-pressed="true"] { background: var(--ink); color: var(--surface); }
+.modes button small { display: block; font-weight: 400; font-size: 11.5px; opacity: .8; }
+body.m-edit .only-build { display: none !important; }
+body:not(.m-edit) .only-edit { display: none !important; }
 
 .fileinfo { font-size: 13px; margin-top: 10px; padding: 8px 10px; background: var(--surface-2); border-radius: 6px; display: flex; flex-wrap: wrap; gap: 4px 10px; align-items: center; }
 .fileinfo .tag { font-family: var(--f-mono); font-size: 11px; color: var(--muted); }
@@ -877,16 +883,21 @@ tr.click { cursor: pointer; } tr.click td:first-child { white-space: nowrap; } t
 
   <div class="layout">
     <aside class="side">
+      <div class="modes" role="group" aria-label="Mode aplikasi">
+        <button type="button" id="mode-build" aria-pressed="true">Susun JKS baru<small>dari daftar toko</small></button>
+        <button type="button" id="mode-edit" aria-pressed="false">Edit JKS yang ada<small>upload JKS buatan sendiri</small></button>
+      </div>
       <section class="panel" id="p-data">
-        <h2><span class="step">1</span>Data toko</h2>
+        <h2><span class="step">1</span><span id="data-title">Data toko</span></h2>
         <div class="drop" id="drop" tabindex="0" role="button" aria-label="Pilih file Excel atau CSV">
           <strong>Pilih atau seret file Excel / CSV</strong>
-          <span>Kolom wajib: kode, nama, titik (lat/long atau link Google Maps), omset, kelas toko</span>
+          <span class="only-build">Kolom wajib: kode, nama, titik (lat/long atau link Google Maps), omset, kelas toko</span>
+          <span class="only-edit">Kolom wajib: kode, nama, titik, salesman, hari (Senin–Sabtu atau R01–R06), jenis kunjungan (M1 / M2C13 / M2C24). File JKS dari sistem dan file ekspor aplikasi ini juga bisa.</span>
         </div>
         <input type="file" id="file" accept=".xlsx,.xls,.csv" hidden>
         <div class="row" style="margin-top:10px">
           <button class="btn" id="btn-template" type="button">Unduh template</button>
-          <button class="btn" id="btn-sample" type="button">Pakai data contoh</button>
+          <button class="btn only-build" id="btn-sample" type="button">Pakai data contoh</button>
         </div>
         <div id="fileinfo"></div>
         <div id="mapping" hidden>
@@ -899,6 +910,7 @@ tr.click { cursor: pointer; } tr.click td:first-child { white-space: nowrap; } t
 
       <section class="panel" id="p-set">
         <h2><span class="step">2</span>Pengaturan</h2>
+        <p class="hint only-edit" style="margin:-4px 0 10px">Dipakai untuk menghitung jam check-in dan menandai jalur yang lewat batas. Pembagian toko tidak diubah.</p>
         <div class="settings">
           <div class="sgroup">
             <div class="gt">Depo</div>
@@ -908,7 +920,7 @@ tr.click { cursor: pointer; } tr.click td:first-child { white-space: nowrap; } t
           </div>
           <div class="sgroup">
             <div class="gt">Tim &amp; jam kerja</div>
-            <div class="field"><label for="s-nSales">Jumlah salesman</label><input type="number" min="1" max="30" id="s-nSales"></div>
+            <div class="field only-build"><label for="s-nSales">Jumlah salesman</label><input type="number" min="1" max="30" id="s-nSales"></div>
             <div class="field"><label for="s-days">Hari kerja per pekan</label><select id="s-days"><option value="5">5 (Senin–Jumat)</option><option value="6">6 (Senin–Sabtu)</option></select></div>
             <div class="field"><label for="s-start">Berangkat dari depo</label><input type="time" id="s-start"></div>
             <div class="field"><label for="s-lastCheckin">Batas check-in terakhir</label><input type="time" id="s-lastCheckin"></div>
@@ -935,7 +947,7 @@ tr.click { cursor: pointer; } tr.click td:first-child { white-space: nowrap; } t
             <div class="field"><label for="s-minMid">Min toko · Sedang</label><input type="number" min="0" max="40" id="s-minMid"></div>
             <div class="field"><label for="s-minFar">Min toko · Jauh</label><input type="number" min="0" max="40" id="s-minFar"></div>
           </div>
-          <div class="sgroup">
+          <div class="sgroup only-build">
             <div class="gt">Jenis kunjungan</div>
             <div class="field"><label for="s-basis">Ditentukan dari</label><select id="s-basis"><option value="kelas">Kelas toko</option><option value="ec">Rata-rata EC 3 bulan</option></select></div>
             <div class="field" id="ec-field"><label for="s-ecM1">EC minimal untuk M1</label><div class="unit"><input type="number" step="0.1" min="0.1" id="s-ecM1"><em>EC/bln</em></div></div>
@@ -947,7 +959,7 @@ tr.click { cursor: pointer; } tr.click td:first-child { white-space: nowrap; } t
             <div class="field"><label for="s-fC">GT C</label><select id="s-fC"><option value="4">M1 · tiap pekan</option><option value="2">M2 · pekan 1&amp;3 / 2&amp;4</option></select></div>
             <div class="field"><label for="s-fNT">Tidak transaksi (NT/Z)</label><select id="s-fNT"><option value="4">M1 · tiap pekan</option><option value="2">M2 · pekan 1&amp;3 / 2&amp;4</option></select></div>
           </div>
-          <div class="sgroup">
+          <div class="sgroup only-build">
             <div class="gt">Logika wilayah</div>
             <label class="tg full"><input type="checkbox" id="s-atomize"> Satukan toko di titik yang sama (≤ 60 m) dalam satu jalur</label>
             <label class="tg full"><input type="checkbox" id="s-gapAware"> Hindari wilayah yang memotong celah (sungai, sawah, lahan kosong)</label>
@@ -958,14 +970,17 @@ tr.click { cursor: pointer; } tr.click td:first-child { white-space: nowrap; } t
         <div class="row" style="margin-top:8px"><button class="btn" type="button" id="btn-reset">Kembalikan nilai awal</button></div>
       </section>
 
-      <button class="btn primary big" id="btn-run" type="button" disabled>3 · Susun JKS</button>
+      <button class="btn primary big only-build" id="btn-run" type="button" disabled>3 · Susun JKS</button>
+      <button class="btn primary big only-edit" id="btn-show" type="button" disabled>3 · Tampilkan JKS untuk diedit</button>
     </aside>
 
     <main class="main" id="results">
       <section class="panel empty" id="empty">
-        <strong>Belum ada JKS yang disusun</strong>
-        Upload file toko (atau pakai data contoh), cek pengaturan, lalu tekan <b>Susun JKS</b>.<br>
-        Hasilnya: ringkasan beban per salesman, matriks 24 jalur per salesman, peta rute, dan file Excel.
+        <strong>Belum ada JKS yang ditampilkan</strong>
+        <span class="only-build">Upload file toko (atau pakai data contoh), cek pengaturan, lalu tekan <b>Susun JKS</b>.<br>
+        Hasilnya: ringkasan beban per salesman, matriks 24 jalur per salesman, peta rute, dan file Excel.</span>
+        <span class="only-edit">Upload JKS yang sudah kamu susun, cek pencocokan kolom, lalu tekan <b>Tampilkan JKS untuk diedit</b>.<br>
+        Aplikasi tidak menyusun ulang: JKS tampil apa adanya di peta dan matriks, lalu bisa diedit dan diekspor.</span>
       </section>
       <div id="out" hidden>
         <section class="panel">
@@ -2269,13 +2284,18 @@ const FIELDS = [
   { k: 'lat', label: 'Latitude', req: true, alias: ['latitude', 'lat', 'lintang', 'latitudetoko'] },
   { k: 'lng', label: 'Longitude', req: true, alias: ['longitude', 'long', 'lng', 'lon', 'bujur', 'longitudetoko'] },
   { k: 'omset', label: 'Omset / bulan', req: true, alias: ['omset', 'omzet', 'rataomset', 'rataratamonset', 'avgomset', 'omsetbulan', 'omsetperbulan', 'rataomsetbulan', 'omset3bulan', 'penjualan'] },
-  { k: 'kelas', label: 'Kelas toko', req: true, alias: ['kelas', 'kelastoko', 'class', 'grade', 'kategori', 'klasifikasi', 'tipe'] },
+  { k: 'kelas', label: 'Kelas toko', req: true, alias: ['kelas', 'kelastoko', 'class', 'grade', 'kategori', 'klasifikasi', 'tipe', 'customergroup', 'custgroup', 'grouptoko'] },
   { k: 'ec', label: 'Rata-rata EC 3 bulan', req: false, alias: ['ec', 'rataec', 'rataratae c', 'rataratae', 'avgec', 'ec3bulan', 'rataec3bulan', 'ratarataec', 'ratarataec3bulan', 'effectivecall', 'rataeffectivecall'] },
   { k: 'kec', label: 'Kecamatan', req: false, alias: ['kecamatan', 'kec', 'district', 'wilayah', 'area'] },
-  { k: 'sales', label: 'Salesman saat ini', req: false, alias: ['salesman', 'salesmansaatini', 'namasalesman', 'sales', 'salesmanasis', 'kodesalesman', 'salesmanlama'] },
+  { k: 'sales', label: 'Salesman saat ini', req: false, alias: ['salesman', 'salesmansaatini', 'namasalesman', 'sales', 'namasales', 'salesmanasis', 'salesmanlama'] },
+  { k: 'hari', label: 'Hari kunjungan', req: false, edit: true, alias: ['hari', 'harikunjungan', 'rayon', 'day', 'harivisit', 'hk'] },
+  { k: 'jenis', label: 'Jenis kunjungan', req: false, edit: true, alias: ['jeniskunjungan', 'cycle', 'siklus', 'jenis', 'frekuensi', 'kunjungan', 'pekankunjungan', 'tipekunjungan'] },
   { k: 'koord', label: 'Koordinat / link peta', req: false, alias: ['koordinat', 'longlat', 'latlong', 'latlng', 'titik', 'lokasi', 'peta', 'linkpeta', 'maps', 'googlemaps', 'linkmaps', 'bukatitik', 'link'] }
 ];
 const normH = s => String(s || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+const EDIT_REQ = ['kode', 'nama', 'lat', 'lng', 'sales', 'hari', 'jenis'];
+const isReq = f => state.editMode ? EDIT_REQ.includes(f.k) : f.req;
+const shownFields = () => FIELDS.filter(f => state.editMode || !f.edit);
 const state = { names: [], edits: [], wb: null, sheet: null, headers: [], data: [], map: {}, valid: null, res: null, fileName: '', sample: false };
 
 $('drop').onclick = () => $('file').click();
@@ -2350,12 +2370,13 @@ function autoMap() {
 function renderMapping() {
   $('mapping').hidden = false;
   const sheetSel = state.wb && state.wb.SheetNames.length > 1 ? `<div class="field full" style="grid-column:1/-1"><label for="m-sheet">Sheet</label><select id="m-sheet">${state.wb.SheetNames.map(n => `<option ${n === state.sheet ? 'selected' : ''}>${esc(n)}</option>`).join('')}</select></div>` : '';
-  $('mapgrid').innerHTML = sheetSel + FIELDS.map(f => `<div class="field ${f.req ? 'req' : ''}"><label for="m-${f.k}">${f.label}</label><select id="m-${f.k}" data-k="${f.k}"><option value="">— tidak ada —</option>${state.headers.map((h, i) => `<option value="${i}" ${state.map[f.k] === i ? 'selected' : ''}>${esc(h)}</option>`).join('')}</select></div>`).join('');
+  $('mapgrid').innerHTML = sheetSel + shownFields().map(f => `<div class="field ${isReq(f) ? 'req' : ''}"><label for="m-${f.k}">${f.label}</label><select id="m-${f.k}" data-k="${f.k}"><option value="">— tidak ada —</option>${state.headers.map((h, i) => `<option value="${i}" ${state.map[f.k] === i ? 'selected' : ''}>${esc(h)}</option>`).join('')}</select></div>`).join('');
   $('mapgrid').querySelectorAll('select[data-k]').forEach(s => s.onchange = () => { const v = s.value; if (v === '') delete state.map[s.dataset.k]; else state.map[s.dataset.k] = +v; revalidate(); });
   if ($('m-sheet')) $('m-sheet').onchange = e => loadSheet(e.target.value);
   $('fileinfo').innerHTML = `<div class="fileinfo"><b>${esc(state.fileName)}</b><span class="tag">${state.data.length} baris · sheet ${esc(state.sheet)}</span></div>` + (state.sample ? '<div class="sample-note">Ini <b>data contoh sintetis</b>: 400 baris toko acak di sekitar Bandung Selatan, termasuk 4 baris bermasalah untuk contoh cek data. Bukan data toko asli.</div>' : '');
 }
 function revalidate() {
+  if (state.editMode) return revalidateEdit();
   const byEc = $('s-basis').value === 'ec';
   const missing = FIELDS.filter(f => f.req && state.map[f.k] == null && !(['lat', 'lng'].includes(f.k) && state.map.koord != null) && !(f.k === 'kelas' && byEc && state.map.ec != null));
   if (byEc && state.map.ec == null) missing.push({ label: 'Rata-rata EC 3 bulan (dipilih sebagai dasar jenis kunjungan)' });
@@ -2389,6 +2410,7 @@ function revalidate() {
 
 // ---------- template & contoh ----------
 $('btn-template').onclick = () => {
+  if (state.editMode) return editTemplate();
   const rows = [
     ['Kode Toko', 'Nama Toko', 'Latitude', 'Longitude', 'Omset', 'Kelas', 'Rata-rata EC 3 Bulan', 'Kecamatan'],
     ['T0001', 'TK Sumber Rejeki', -6.9512, 107.6634, 8500000, 'Flagship Aktif', 6.3, 'Buahbatu'],
@@ -2805,6 +2827,137 @@ function openExport(rows) {
   renderAll();
   toast('JKS dibuka: ' + stores.length + ' toko, ' + names.length + ' salesman. Silakan edit.');
 }
+
+// ---------- mode edit: JKS yang sudah disusun sendiri ----------
+function setMode(edit) {
+  state.editMode = edit;
+  document.body.classList.toggle('m-edit', edit);
+  $('mode-build').setAttribute('aria-pressed', String(!edit)); $('mode-edit').setAttribute('aria-pressed', String(edit));
+  $('data-title').textContent = edit ? 'Data JKS' : 'Data toko';
+  if (state.wb && !state.sample) { renderMapping(); detectExport(); revalidate(); }
+  else { state.wb = null; state.data = []; $('mapping').hidden = true; $('fileinfo').innerHTML = ''; $('checks').innerHTML = ''; $('btn-run').disabled = true; $('btn-show').disabled = true; }
+}
+$('mode-build').onclick = () => { if (state.editMode) setMode(false); };
+$('mode-edit').onclick = () => { if (!state.editMode) setMode(true); };
+function editTemplate() {
+  const rows = [
+    ['Kode Toko', 'Nama Toko', 'Latitude', 'Longitude', 'Salesman', 'Hari', 'Jenis Kunjungan', 'Kelas', 'Omset', 'Rata-rata EC 3 Bulan', 'Kecamatan'],
+    ['T0001', 'TK Sumber Rejeki', -6.9512, 107.6634, 'Budi', 'Senin', 'M1', 'GT A', 8500000, 6.3, 'Buahbatu'],
+    ['T0002', 'TK Berkah Frozen', -6.9551, 107.6702, 'Budi', 'Senin', 'M2C13', 'GT C', 900000, 1.2, 'Buahbatu'],
+    ['T0003', 'WR Bu Imas', -6.9688, 107.6401, 'Budi', 'Selasa', 'M2C24', 'GT C', 850000, 1.7, 'Bojongsoang'],
+    ['T0004', 'TK Barokah', -7.0921, 107.7344, 'Sari', 'Rabu', 'M1', 'GT B', 1900000, 3.5, 'Ciparay']
+  ];
+  const ws = XLSX.utils.aoa_to_sheet(rows); ws['!cols'] = [10, 22, 11, 11, 14, 9, 14, 12, 12, 12, 14].map(w => ({ wch: w }));
+  const info = XLSX.utils.aoa_to_sheet([
+    ['Petunjuk pengisian (mode Edit JKS)'], [''],
+    ['Kode Toko', 'Wajib, unik per toko'], ['Nama Toko', 'Wajib'],
+    ['Latitude / Longitude', 'Wajib. Angka desimal, atau link Google Maps di satu kolom'],
+    ['Salesman', 'Wajib. Nama salesman yang memegang toko'],
+    ['Hari', 'Wajib. Senin–Sabtu, atau kode RAYON R01–R06 (R01 = Senin)'],
+    ['Jenis Kunjungan', 'Wajib. M1 = tiap pekan, M2C13 = pekan 1 & 3, M2C24 = pekan 2 & 4. Tulisan M2 saja akan dibagi otomatis ke C13/C24'],
+    ['Kelas, Omset, EC, Kecamatan', 'Opsional, untuk ringkasan'], [''],
+    ['Catatan', 'Satu baris per toko. File JKS dari sistem (KODE OUTLET, RAYON, CYCLE, NAMA SALES) dan file ekspor aplikasi ini juga bisa langsung dipakai']
+  ]); info['!cols'] = [{ wch: 26 }, { wch: 80 }];
+  const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, 'JKS'); XLSX.utils.book_append_sheet(wb, info, 'Petunjuk');
+  saveWB(wb, 'Template_Edit_JKS.xlsx');
+}
+function parseHari(v) {
+  if (v == null || v === '') return -1;
+  if (typeof v === 'number') return v >= 1 && v <= 7 ? v - 1 : -1;
+  const t = String(v).trim().toUpperCase().replace(/\s/g, '');
+  let m = t.match(/^R?0*([1-7])$/) || t.match(/^HARI0*([1-7])$/); if (m) return +m[1] - 1;
+  const pre = ['SEN', 'SEL', 'RAB', 'KAM', 'JUM', 'SAB', 'MIN'], en = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'];
+  let i = pre.findIndex(p => t.startsWith(p)); if (i < 0) i = en.findIndex(p => t.startsWith(p));
+  return i;
+}
+function parseJenisEdit(v) {
+  const p = JKS.parseJenis(v); if (p) return p;
+  const t = String(v || '').toUpperCase().replace(/\s/g, '');
+  if (/^M2$/.test(t) || t.includes('2PEKAN') || t.includes('2MINGGU') || t.includes('DUAPEKAN') || t.includes('DUAMINGGU')) return { freq: 2, phase: null };
+  return null;
+}
+// koordinat tanpa titik desimal (mis. -6943808 dari sistem): pilih posisi koma yang paling dekat ke depo
+function fixCoordNear(v, ref) {
+  if (v === '' || v == null) return v;
+  let n = typeof v === 'number' ? v : Number(String(v).trim().replace(',', '.'));
+  if (!isFinite(n) || Math.abs(n) <= 180) return v;
+  const neg = n < 0, digits = String(Math.abs(Math.round(n)));
+  let best = v, bd = Infinity;
+  for (let k = 1; k <= 3 && k < digits.length; k++) { const x = (neg ? -1 : 1) * parseFloat(digits.slice(0, k) + '.' + digits.slice(k)); if (Math.abs(x - ref) < bd) { bd = Math.abs(x - ref); best = x; } }
+  return best;
+}
+function editRows() {
+  const get = (r, k) => state.map[k] == null ? undefined : r[state.map[k]];
+  const dl = +$('s-depotLat').value, dg = +$('s-depotLng').value;
+  return state.data.map(x => ({ _row: x.row, kode: get(x.r, 'kode'), nama: get(x.r, 'nama'), lat: fixCoordNear(get(x.r, 'lat'), dl), lng: fixCoordNear(get(x.r, 'lng'), dg), omset: get(x.r, 'omset'), kelas: get(x.r, 'kelas'), kec: get(x.r, 'kec'), sales: get(x.r, 'sales'), koord: get(x.r, 'koord'), ec: get(x.r, 'ec'), hari: get(x.r, 'hari'), jenis: get(x.r, 'jenis') }));
+}
+const cleanSales = v => String(v == null ? '' : v).replace(/^[A-Z]{2,4}\s*-\s*/, '').trim();
+function buildEditStores() {
+  const rows = editRows();
+  const cfg = Object.assign(readForm(), { basis: 'kelas' });
+  const v = JKS.validate(rows, cfg);
+  const byKode = new Map(); rows.forEach(r => { const k = r.kode == null ? '' : String(r.kode).trim(); if (k && !byKode.has(k)) byKode.set(k, r); });
+  const issues = v.issues.filter(i => !/^Kelas toko kosong/.test(i.masalah));
+  const names = [], stores = [];
+  v.stores.forEach(st => {
+    const r = byKode.get(st.kode); const add = m => issues.push({ baris: r._row, kode: st.kode, nama: st.nama, masalah: m, status: 'Dikeluarkan' });
+    if (!r.kelas || String(r.kelas).trim() === '') st.kelas = '';
+    const sn = cleanSales(r.sales); const d = parseHari(r.hari); const p = parseJenisEdit(r.jenis);
+    if (!sn) return add('Salesman kosong');
+    if (d < 0) return add('Hari "' + (r.hari == null ? '' : r.hari) + '" tidak terbaca');
+    if (d > 5) return add('Hari Minggu tidak didukung');
+    if (!p) return add('Jenis kunjungan "' + (r.jenis == null ? '' : r.jenis) + '" tidak terbaca (pakai M1, M2C13, atau M2C24)');
+    if (!names.includes(sn)) names.push(sn);
+    Object.assign(st, { sales: names.indexOf(sn), day: d, fixFreq: p.freq, phase: p.phase, ntWeek: 0 });
+    stores.push(st);
+  });
+  // "M2" tanpa pekan: bagi bergantian ke C13/C24 per salesman-hari
+  const cnt = {}; stores.forEach(st => { if (st.fixFreq === 2 && st.phase != null) { const k = st.sales + '|' + st.day; cnt[k] = (cnt[k] || 0) + (st.phase ? 1 : -1); } });
+  let autoPhase = 0;
+  stores.forEach(st => { if (st.fixFreq !== 2 || st.phase != null) { if (st.phase == null) st.phase = 0; return; } const k = st.sales + '|' + st.day; st.phase = (cnt[k] || 0) > 0 ? 0 : 1; cnt[k] = (cnt[k] || 0) + (st.phase ? 1 : -1); autoPhase++; });
+  return { stores, issues, names, autoPhase, merged: v.merged };
+}
+function revalidateEdit() {
+  const missing = FIELDS.filter(f => EDIT_REQ.includes(f.k) && state.map[f.k] == null && !(['lat', 'lng'].includes(f.k) && state.map.koord != null));
+  if (missing.length) {
+    state.editPrep = null;
+    $('checks').innerHTML = `<div class="checks"><div class="check bad"><span>Kolom belum dipilih: ${missing.map(f => f.label).join(', ')}</span><b>!</b></div></div>`;
+    $('btn-show').disabled = true; return;
+  }
+  const E = buildEditStores(); state.editPrep = E;
+  const m1 = E.stores.filter(s => s.fixFreq >= 4).length;
+  const out = E.issues.filter(i => i.status === 'Dikeluarkan').length, wr = E.issues.length - out;
+  const maxDay = Math.max(-1, ...E.stores.map(s => s.day));
+  $('checks').innerHTML = `<h3>Cek JKS</h3><div class="checks">
+    <div class="check ok"><span>Toko terbaca</span><b>${E.stores.length}</b></div>
+    <div class="check"><span>Salesman</span><b>${E.names.length}</b></div>
+    <div class="check"><span>Hari kerja dipakai</span><b>${maxDay + 1}</b></div>
+    <div class="check"><span>M1 · M2</span><b>${m1} · ${E.stores.length - m1}</b></div>
+    ${E.autoPhase ? `<div class="check warn"><span>M2 tanpa pekan, dibagi otomatis ke C13/C24</span><b>${E.autoPhase}</b></div>` : ''}
+    ${E.merged ? `<div class="check"><span>Baris berulang (kode &amp; titik sama) digabung</span><b>${E.merged}</b></div>` : ''}
+    <div class="check ${out ? 'bad' : 'ok'}"><span>Tidak bisa ditampilkan</span><b>${out}</b></div>
+    <div class="check ${wr ? 'warn' : 'ok'}"><span>Peringatan (tetap tampil)</span><b>${wr}</b></div></div>
+    <p class="hint" style="margin-top:6px">${esc(E.names.join(', '))}</p>
+    ${E.issues.length ? `<details class="fold"><summary>Lihat ${E.issues.length} masalah data</summary>
+      <div class="tbl-wrap"><table><tr><th>Baris</th><th>Kode</th><th>Nama</th><th>Masalah</th></tr>
+      ${E.issues.slice(0, 300).map(i => `<tr><td class="n">${esc(i.baris)}</td><td>${esc(i.kode)}</td><td>${esc(i.nama)}</td><td><span class="pill ${i.status === 'Dikeluarkan' ? 'bad' : 'warn'}">${i.status}</span> ${esc(i.masalah)}</td></tr>`).join('')}</table></div></details>` : ''}`;
+  $('btn-show').disabled = !E.stores.length;
+}
+$('btn-show').onclick = () => {
+  const E = state.editPrep || buildEditStores(); if (!E.stores.length) return;
+  const maxDay = Math.max(...E.stores.map(s => s.day));
+  if (maxDay >= 5) $('s-days').value = '6';
+  $('s-nSales').value = E.names.length;
+  state.names = E.names.slice(); state.edits = []; state.mode = 'buka';
+  const cfg = readForm(); cfg.nSales = E.names.length; placeDepot();
+  const stores = E.stores.map(s => Object.assign({}, s));
+  state.res = JKS.fromAssignment(stores, cfg); state.res.issues = E.issues;
+  state.valid = { stores, issues: E.issues };
+  renderAll();
+  const R = state.res, act = R.routes.filter(r => r.order.length);
+  const lewat = act.filter(r => r.sc.lastCheckin > cfg.lastCheckin).length;
+  toast('JKS tampil: ' + stores.length + ' toko, ' + E.names.length + ' salesman' + (lewat ? ', ' + lewat + ' jalur lewat ' + fmt(cfg.lastCheckin) : '') + '. Silakan edit.');
+};
 
 // ---------- ekspor ----------
 $('btn-export').onclick = () => {
