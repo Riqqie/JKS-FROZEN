@@ -940,12 +940,19 @@ tr.click { cursor: pointer; } tr.click td:first-child { white-space: nowrap; } t
             <div class="field"><label for="s-basis">Ditentukan dari</label><select id="s-basis"><option value="kelas">Kelas toko</option><option value="ec">Rata-rata EC 3 bulan</option></select></div>
             <div class="field" id="ec-field"><label for="s-ecM1">EC minimal untuk M1</label><div class="unit"><input type="number" step="0.1" min="0.1" id="s-ecM1"><em>EC/bln</em></div></div>
             <p class="hint full" id="ec-hint"></p>
-            <div class="field"><label for="s-fFA">Flagship Aktif</label><select id="s-fFA"><option value="4">M1 · tiap pekan</option><option value="2">M2 · pekan 1&amp;3 / 2&amp;4</option><option value="1">4 pekan sekali (Pekan 1/2/3/4 saja)</option></select></div>
-            <div class="field"><label for="s-fFP">Flagship Pasif</label><select id="s-fFP"><option value="4">M1 · tiap pekan</option><option value="2">M2 · pekan 1&amp;3 / 2&amp;4</option><option value="1">4 pekan sekali (Pekan 1/2/3/4 saja)</option></select></div>
-            <div class="field"><label for="s-fA">GT A</label><select id="s-fA"><option value="4">M1 · tiap pekan</option><option value="2">M2 · pekan 1&amp;3 / 2&amp;4</option><option value="1">4 pekan sekali (Pekan 1/2/3/4 saja)</option></select></div>
-            <div class="field"><label for="s-fB">GT B</label><select id="s-fB"><option value="4">M1 · tiap pekan</option><option value="2">M2 · pekan 1&amp;3 / 2&amp;4</option><option value="1">4 pekan sekali (Pekan 1/2/3/4 saja)</option></select></div>
-            <div class="field"><label for="s-fC">GT C</label><select id="s-fC"><option value="4">M1 · tiap pekan</option><option value="2">M2 · pekan 1&amp;3 / 2&amp;4</option><option value="1">4 pekan sekali (Pekan 1/2/3/4 saja)</option></select></div>
-            <div class="field"><label for="s-fNT">Tidak transaksi (NT/Z)</label><select id="s-fNT"><option value="4">M1 · tiap pekan</option><option value="2">M2 · pekan 1&amp;3 / 2&amp;4</option><option value="1">4 pekan sekali (Pekan 1/2/3/4 saja)</option></select></div>
+            <div class="field"><label for="s-fFA">Flagship Aktif</label><select id="s-fFA"><option value="4">M1 · tiap pekan</option><option value="2">M2 · pekan 1&amp;3 / 2&amp;4</option></select></div>
+            <div class="field"><label for="s-fFP">Flagship Pasif</label><select id="s-fFP"><option value="4">M1 · tiap pekan</option><option value="2">M2 · pekan 1&amp;3 / 2&amp;4</option></select></div>
+            <div class="field"><label for="s-fA">GT A</label><select id="s-fA"><option value="4">M1 · tiap pekan</option><option value="2">M2 · pekan 1&amp;3 / 2&amp;4</option></select></div>
+            <div class="field"><label for="s-fB">GT B</label><select id="s-fB"><option value="4">M1 · tiap pekan</option><option value="2">M2 · pekan 1&amp;3 / 2&amp;4</option></select></div>
+            <div class="field"><label for="s-fC">GT C</label><select id="s-fC"><option value="4">M1 · tiap pekan</option><option value="2">M2 · pekan 1&amp;3 / 2&amp;4</option></select></div>
+            <div class="field"><label for="s-fNT">Tidak transaksi (NT/Z)</label><select id="s-fNT"><option value="4">M1 · tiap pekan</option><option value="2">M2 · pekan 1&amp;3 / 2&amp;4</option></select></div>
+          </div>
+          <div class="sgroup">
+            <div class="gt">Logika wilayah</div>
+            <label class="tg full"><input type="checkbox" id="s-atomize"> Satukan toko di titik yang sama (≤ 60 m) dalam satu jalur</label>
+            <label class="tg full"><input type="checkbox" id="s-gapAware"> Hindari wilayah yang memotong celah (sungai, sawah, lahan kosong)</label>
+            <label class="tg full"><input type="checkbox" id="s-kecBlock"> Blok per kecamatan: 1 kecamatan utuh dipegang 1 salesman</label>
+            <p class="hint full">Blok kecamatan butuh kolom Kecamatan yang rapi. Bila kecamatannya besar dibanding jumlah toko per salesman, beban bisa kurang rata.</p>
           </div>
         </div>
         <div class="row" style="margin-top:8px"><button class="btn" type="button" id="btn-reset">Kembalikan nilai awal</button></div>
@@ -1056,9 +1063,12 @@ tr.click { cursor: pointer; } tr.click td:first-child { white-space: nowrap; } t
     zoneNear: 15, zoneMid: 35,
     capNear: 13, capMid: 12, capFar: 10,
     minNear: 10, minMid: 9, minFar: 7,   // minimal toko per hari per zona
-    fFA: 4, fFP: 2, fA: 4, fB: 4, fC: 2, fNT: 1, // kunjungan per 4 pekan
+    fFA: 4, fFP: 2, fA: 4, fB: 4, fC: 2, fNT: 2, // kunjungan per 4 pekan (paling jarang 2 pekan sekali)
     basis: 'kelas',             // 'kelas' atau 'ec'
-    ecM1: 3,                    // rata-rata EC >= ini -> M1; di bawahnya M2; EC 0 -> 4 pekan sekali
+    atomize: true,      // toko di titik yang hampir sama (<= 60 m) selalu satu jalur
+    gapAware: true,     // hindari wilayah yang memotong celah (sungai, sawah, lahan kosong)
+    kecBlock: false,    // 1 kecamatan utuh = 1 salesman
+    ecM1: 3,                    // rata-rata EC >= ini -> M1; di bawahnya M2; EC 0 juga M2
     maxDistKm: 100              // jarak jalan maks dari depo sebelum dianggap salah titik
   };
   const DAY_NAMES = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu'];
@@ -1081,7 +1091,7 @@ tr.click { cursor: pointer; } tr.click td:first-child { white-space: nowrap; } t
     c.zoneOf = km => km <= c.zoneNear ? 'Dekat' : km <= c.zoneMid ? 'Sedang' : 'Jauh';
     c.minOf = z => z === 'Dekat' ? c.minNear : z === 'Sedang' ? c.minMid : c.minFar;
     c.capOf = z => z === 'Dekat' ? c.capNear : z === 'Sedang' ? c.capMid : c.capFar;
-    c.freqOf = k => ({ FA: c.fFA, FP: c.fFP, A: c.fA, B: c.fB, C: c.fC, NT: c.fNT })[k] || c.fNT;
+    c.freqOf = k => Math.max(2, ({ FA: c.fFA, FP: c.fFP, A: c.fA, B: c.fB, C: c.fC, NT: c.fNT })[k] || c.fNT || 2);
     return c;
   }
 
@@ -1152,7 +1162,7 @@ tr.click { cursor: pointer; } tr.click td:first-child { white-space: nowrap; } t
       st.ec = (r.ec === '' || r.ec == null) ? NaN : num(r.ec);
       const byEc = c.basis === 'ec';
       if (byEc && !isFinite(st.ec)) add('Rata-rata EC kosong, jenis kunjungan pakai aturan kelas', 'Peringatan');
-      if (!k) { if (!(byEc && isFinite(st.ec))) add('Kelas toko kosong, dianggap NT (4 pekan sekali)', 'Peringatan'); k = byEc && isFinite(st.ec) ? '' : 'NT'; }
+      if (!k) { if (!(byEc && isFinite(st.ec))) add('Kelas toko kosong, dianggap tidak transaksi (M2)', 'Peringatan'); k = byEc && isFinite(st.ec) ? '' : 'NT'; }
       else if (k[0] === '?') { add('Kelas "' + k.slice(1) + '" tidak dikenal, dianggap NT', 'Peringatan'); k = 'NT'; }
       st.kelas = k;
       ok.push(st);
@@ -1316,6 +1326,206 @@ tr.click { cursor: pointer; } tr.click td:first-child { white-space: nowrap; } t
   }
 
   // ---------- penyusun utama ----------
+  // ---------- logika wilayah: atom, graf tetangga dengan celah, kerapatan ----------
+  function computeAtoms(stores) {
+    const n = stores.length; if (!n) return;
+    const nn = stores.map(s => { let bd = Infinity; for (const t of stores) if (t !== s) { const d = Math.hypot(s.x - t.x, s.y - t.y); if (d < bd) bd = d; } return bd; });
+    const med = nn.slice().sort((a, b) => a - b)[Math.floor(n / 2)] || 0;
+    const eps = Math.max(0.02, Math.min(0.06, 0.5 * med)); // km: 20-60 m
+    const par = stores.map((_, i) => i); const find = x => { while (par[x] !== x) { par[x] = par[par[x]]; x = par[x]; } return x; };
+    for (let i = 0; i < n; i++) for (let j = i + 1; j < n; j++) if (Math.hypot(stores[i].x - stores[j].x, stores[i].y - stores[j].y) <= eps) { const a = find(i), b = find(j); if (a !== b) par[a] = b; }
+    stores.forEach((s, i) => { s.atom = find(i); });
+  }
+  // K tetangga terdekat; kalau gapAware, sambungan yang jauh melebihi kerapatan normal (celah) diputus
+  function neighborGraph(pts, K, gapAware) {
+    const n = pts.length, G = pts.map(() => []), nn = [];
+    for (let i = 0; i < n; i++) {
+      const d = [];
+      for (let j = 0; j < n; j++) if (j !== i) d.push([Math.hypot(pts[i].x - pts[j].x, pts[i].y - pts[j].y), j]);
+      d.sort((a, b) => a[0] - b[0]); G[i] = d.slice(0, K); nn.push(d.length ? d[0][0] : 0);
+    }
+    let thr = Infinity;
+    if (gapAware && n > 3) { const s = nn.slice().sort((a, b) => a - b); const p75 = s[Math.floor(n * 0.75)] || 0; thr = Math.max(p75 * 8, 1.5); }
+    const adj = pts.map(() => new Set());
+    G.forEach((l, i) => l.forEach(([d, j]) => { if (d <= thr) { adj[i].add(j); adj[j].add(i); } }));
+    // pulau yang terputus disambung lewat satu jembatan terpendek, supaya tetap bisa ikut wilayah tetangganya
+    for (let guard = 0; guard < n; guard++) {
+      const comp = new Array(n).fill(-1); let nc = 0;
+      for (let i = 0; i < n; i++) { if (comp[i] >= 0) continue; const q = [i]; comp[i] = nc; while (q.length) { const x = q.pop(); adj[x].forEach(y => { if (comp[y] < 0) { comp[y] = nc; q.push(y); } }); } nc++; }
+      if (nc <= 1) break;
+      // jembatan terpendek dari komponen terkecil ke komponen lain
+      const size = new Array(nc).fill(0); comp.forEach(c0 => size[c0]++);
+      let small = 0; for (let c0 = 1; c0 < nc; c0++) if (size[c0] < size[small]) small = c0;
+      let bd = Infinity, bi = -1, bj = -1;
+      for (let i = 0; i < n; i++) if (comp[i] === small) for (let j = 0; j < n; j++) if (comp[j] !== small) { const d = Math.hypot(pts[i].x - pts[j].x, pts[i].y - pts[j].y); if (d < bd) { bd = d; bi = i; bj = j; } }
+      if (bi < 0) break;
+      adj[bi].add(bj); adj[bj].add(bi);
+    }
+    return adj;
+  }
+  // satukan anggota atom (dan kecamatan bila diminta) ke label mayoritasnya
+  function enforceGroups(pts, lab, keyOf, weightOf) {
+    const g = new Map();
+    pts.forEach((p, i) => { const k = keyOf(p); if (k == null) return; if (!g.has(k)) g.set(k, []); g.get(k).push(i); });
+    g.forEach(idx => { if (idx.length < 2) return; const w = {}; idx.forEach(i => { w[lab[i]] = (w[lab[i]] || 0) + weightOf(pts[i]); }); const best = +Object.keys(w).sort((a, b) => w[b] - w[a])[0]; idx.forEach(i => { lab[i] = best; }); });
+    return lab;
+  }
+  // pecahan wilayah (bagian label yang tidak tersambung ke badan utamanya lewat graf tetangga) dipindah ke label tetangga terbanyak
+  function fixFragments(pts, lab, adj, lockKey) {
+    for (let pass = 0; pass < 4; pass++) {
+      let changed = false;
+      const comp = new Array(pts.length).fill(-1), comps = [];
+      for (let i = 0; i < pts.length; i++) {
+        if (comp[i] >= 0) continue;
+        const id = comps.length, q = [i], mem = []; comp[i] = id;
+        while (q.length) { const x = q.pop(); mem.push(x); adj[x].forEach(y => { if (comp[y] < 0 && lab[y] === lab[x]) { comp[y] = id; q.push(y); } }); }
+        comps.push({ lab: lab[i], mem });
+      }
+      const biggest = {}; comps.forEach((c, id) => { if (biggest[c.lab] == null || c.mem.length > comps[biggest[c.lab]].mem.length) biggest[c.lab] = id; });
+      comps.forEach((c, id) => {
+        if (biggest[c.lab] === id) return;
+        const votes = {}; c.mem.forEach(x => adj[x].forEach(y => { if (lab[y] !== c.lab) votes[lab[y]] = (votes[lab[y]] || 0) + 1; }));
+        const ks = Object.keys(votes); if (!ks.length) return; // pulau terpisah: biarkan
+        const to = +ks.sort((a, b) => votes[b] - votes[a])[0];
+        c.mem.forEach(x => { lab[x] = to; }); changed = true;
+      });
+      if (!changed) break;
+    }
+    return lab;
+  }
+  function shapeTerritory(pts, lab, c, useKec) {
+    if (useKec) lab = enforceGroups(pts, lab, p => p.kec ? 'k:' + p.kec : null, p => p.wt || 1);
+    if (c.atomize) lab = enforceGroups(pts, lab, p => p.atom, p => p.wt || 1);
+    const adj = neighborGraph(pts, Math.min(8, pts.length - 1), c.gapAware);
+    lab = fixFragments(pts, lab, adj);
+    if (useKec) lab = enforceGroups(pts, lab, p => p.kec ? 'k:' + p.kec : null, p => p.wt || 1);
+    if (c.atomize) lab = enforceGroups(pts, lab, p => p.atom, p => p.wt || 1);
+    return lab;
+  }
+
+  // ---------- pembagian wilayah: k-means seimbang di atas atom, dirapikan lewat graf tetangga ----------
+  function mulberry(seed) { let a = seed >>> 0; return () => { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+  // items: toko (punya x, y, atom, kec); weightOf: beban per toko; hasil: label 0..k-1 per toko
+  function regionPartition(items, k, weightOf, opt) {
+    const n = items.length; if (k <= 1 || !n) return items.map(() => 0);
+    if (!opt._inner && !opt.init) {
+      // beberapa titik awal; ambil yang bebannya paling rata dan wilayahnya paling rapat
+      let best = null;
+      const tries = opt.tries || 6;
+      for (let t = 0; t < tries; t++) {
+        const lab = regionPartition(items, k, weightOf, Object.assign({}, opt, { _inner: true, seed: (opt.seed || 1) * 97 + t * 13 + 1 }));
+        const L = new Array(k).fill(0), sx = new Array(k).fill(0), sy = new Array(k).fill(0), sn = new Array(k).fill(0);
+        items.forEach((p, i) => { L[lab[i]] += weightOf(p); sx[lab[i]] += p.x; sy[lab[i]] += p.y; sn[lab[i]]++; });
+        const mean = L.reduce((a, b) => a + b, 0) / k;
+        const dev = Math.max(...L.map(v => Math.abs(v - mean))) / (mean || 1);
+        let ssd = 0; items.forEach((p, i) => { const c0 = lab[i]; ssd += (p.x - sx[c0] / sn[c0]) ** 2 + (p.y - sy[c0] / sn[c0]) ** 2; });
+        const score = dev * 10 + Math.sqrt(ssd / n) / 10;
+        if (!best || score < best.score) best = { lab, score };
+      }
+      return best.lab;
+    }
+    const rng = mulberry(opt.seed || 1);
+    // 1) simpul = atom (toko di titik yang hampir sama) atau kecamatan utuh
+    const keyOf = p => opt.kecBlocks && p.kec ? 'k:' + p.kec : opt.atomize && p.atom != null ? 'a:' + p.atom : 'i:' + p.kode;
+    const nodeMap = new Map(), nodes = [];
+    items.forEach((p, i) => { const kk = keyOf(p); let nd = nodeMap.get(kk); if (!nd) { nd = { mem: [], x: 0, y: 0, w: 0 }; nodeMap.set(kk, nd); nodes.push(nd); } nd.mem.push(i); });
+    nodes.forEach(nd => { nd.mem.forEach(i => { nd.x += items[i].x; nd.y += items[i].y; nd.w += weightOf(items[i]); }); nd.x /= nd.mem.length; nd.y /= nd.mem.length; nd.w = Math.max(nd.w, 1e-6); });
+    const m = nodes.length;
+    if (m <= k) { const lab = new Array(n); nodes.forEach((nd, j) => nd.mem.forEach(i => { lab[i] = j % k; })); return lab; }
+    const adj = neighborGraph(nodes, Math.min(8, m - 1), opt.gapAware);
+    const W = nodes.reduce((a, nd) => a + nd.w, 0), target = W / k;
+    const d2 = (a, b) => (a.x - b.x) ** 2 + (a.y - b.y) ** 2;
+    let lab;
+    if (opt.init) {
+      // mulai dari pembagian yang sudah seimbang; simpul ikut label mayoritas anggotanya
+      lab = nodes.map(nd => { const v = {}; nd.mem.forEach(i => { v[opt.init[i]] = (v[opt.init[i]] || 0) + weightOf(items[i]); }); return +Object.keys(v).sort((a, b) => v[b] - v[a])[0]; });
+    } else {
+    // 2) titik awal k-means++ (acak terkendali, beda tiap putaran)
+    const cent = [{ x: nodes[Math.floor(rng() * m)].x, y: nodes[Math.floor(rng() * m)].y }];
+    cent[0] = { x: nodes[Math.floor(rng() * m)].x, y: nodes[Math.floor(rng() * m)].y };
+    while (cent.length < k) {
+      const dd = nodes.map(nd => Math.min(...cent.map(c0 => d2(nd, c0))) * nd.w); const sum = dd.reduce((a, b) => a + b, 0) || 1;
+      let r = rng() * sum, pick = 0; for (let i = 0; i < m; i++) { r -= dd[i]; if (r <= 0) { pick = i; break; } }
+      cent.push({ x: nodes[pick].x, y: nodes[pick].y });
+    }
+    // 3) penugasan berkapasitas: simpul yang paling "yakin" dilayani dulu
+    lab = new Array(m).fill(0);
+    const cap = target * 1.1;
+    for (let it = 0; it < 30; it++) {
+      const order = nodes.map((nd, i) => { const ds = cent.map(c0 => d2(nd, c0)).sort((a, b) => a - b); return { i, r: (ds[1] || ds[0]) - ds[0] }; }).sort((a, b) => b.r - a.r);
+      const load = new Array(k).fill(0), nl = new Array(m);
+      for (const { i } of order) {
+        const rk = cent.map((c0, ci) => [d2(nodes[i], c0), ci]).sort((a, b) => a[0] - b[0]);
+        let ok = false; for (const [, ci] of rk) if (load[ci] + nodes[i].w <= cap) { nl[i] = ci; load[ci] += nodes[i].w; ok = true; break; }
+        if (!ok) { nl[i] = rk[0][1]; load[rk[0][1]] += nodes[i].w; }
+      }
+      const sx = new Array(k).fill(0), sy = new Array(k).fill(0), sw = new Array(k).fill(0);
+      nodes.forEach((nd, i) => { sx[nl[i]] += nd.x * nd.w; sy[nl[i]] += nd.y * nd.w; sw[nl[i]] += nd.w; });
+      for (let ci = 0; ci < k; ci++) if (sw[ci]) cent[ci] = { x: sx[ci] / sw[ci], y: sy[ci] / sw[ci] };
+      const same = nl.every((v, i) => v === lab[i]); lab = nl; if (same) break;
+    }
+    }
+    const loads = () => { const L = new Array(k).fill(0); nodes.forEach((nd, i) => { L[lab[i]] += nd.w; }); return L; };
+    // 4) rapikan: simpul yang dikelilingi tetangga wilayah lain ikut wilayah itu (selama tidak terlalu berat)
+    for (let pass = 0; pass < 6; pass++) {
+      let moved = 0; const L = loads();
+      for (let i = 0; i < m; i++) {
+        const v = {}; adj[i].forEach(j => { v[lab[j]] = (v[lab[j]] || 0) + 1; });
+        const own = v[lab[i]] || 0; let bl = -1, bc = own;
+        Object.keys(v).forEach(l => { if (+l !== lab[i] && v[l] > bc) { bc = v[l]; bl = +l; } });
+        if (bl >= 0 && bc >= 2 * Math.max(own, 1) && L[bl] + nodes[i].w <= target * 1.15) { L[lab[i]] -= nodes[i].w; L[bl] += nodes[i].w; lab[i] = bl; moved++; }
+      }
+      if (!moved) break;
+    }
+    fixFragments(nodes, lab, adj);
+    // 5) pemerataan beban: geser simpul di perbatasan dari wilayah berat ke tetangganya yang lebih ringan,
+    //    tanpa memutus wilayah asal (cek konektivitas)
+    const connectedWithout = (ci, skip) => {
+      const mem = []; for (let i = 0; i < m; i++) if (lab[i] === ci && i !== skip) mem.push(i);
+      if (mem.length <= 1) return true;
+      const set = new Set(mem), seen = new Set([mem[0]]), q = [mem[0]];
+      while (q.length) { const x = q.pop(); adj[x].forEach(y => { if (set.has(y) && !seen.has(y)) { seen.add(y); q.push(y); } }); }
+      // pulau (simpul tanpa sambungan) tidak dihitung sebagai pemutus
+      return mem.every(x => seen.has(x) || ![...adj[x]].some(y => set.has(y)));
+    };
+    const tol = (opt.tol || 0.04) * target;
+    for (let guard = 0; guard < m * 3; guard++) {
+      const L = loads();
+      const cc = []; for (let ci = 0; ci < k; ci++) cc.push({ ci, dev: L[ci] - target });
+      cc.sort((a, b) => Math.abs(b.dev) - Math.abs(a.dev));
+      let moved = false;
+      for (const { ci, dev } of cc) {
+        if (Math.abs(dev) <= tol) break;
+        const C = loads(); const cents = Array.from({ length: k }, () => ({ x: 0, y: 0, w: 0 }));
+        nodes.forEach((nd, i) => { const c0 = cents[lab[i]]; c0.x += nd.x * nd.w; c0.y += nd.y * nd.w; c0.w += nd.w; }); cents.forEach(c0 => { if (c0.w) { c0.x /= c0.w; c0.y /= c0.w; } });
+        let best = null;
+        for (let i = 0; i < m; i++) {
+          // dev>0: dorong simpul milik ci ke tetangga ringan; dev<0: tarik simpul tetangga berat ke ci
+          const from = dev > 0 ? ci : lab[i];
+          if (dev > 0 ? lab[i] !== ci : lab[i] === ci) continue;
+          const targets = new Set(); adj[i].forEach(j => { if (lab[j] !== lab[i]) targets.add(lab[j]); });
+          for (const to of targets) {
+            if (dev < 0 && to !== ci) continue;
+            if (C[to] + nodes[i].w > C[from] - nodes[i].w + tol) continue; // jangan malah membalik ketimpangan
+            const cost = Math.sqrt(d2(nodes[i], cents[to])) - Math.sqrt(d2(nodes[i], cents[from]));
+            if (!best || cost < best.cost) best = { i, from, to, cost };
+          }
+        }
+        if (best && connectedWithout(best.from, best.i)) { lab[best.i] = best.to; moved = true; break; }
+        if (best) { // coba kandidat lain yang tidak memutus wilayah
+          const cand = [];
+          for (let i = 0; i < m; i++) { const from = dev > 0 ? ci : lab[i]; if (dev > 0 ? lab[i] !== ci : lab[i] === ci) continue; adj[i].forEach(j => { const to = lab[j]; if (to === lab[i] || (dev < 0 && to !== ci)) return; if (C[to] + nodes[i].w > C[from] - nodes[i].w + tol) return; cand.push({ i, from, to, cost: Math.sqrt(d2(nodes[i], cents[to])) - Math.sqrt(d2(nodes[i], cents[from])) }); }); }
+          cand.sort((a, b) => a.cost - b.cost);
+          for (const cd of cand.slice(0, 25)) if (connectedWithout(cd.from, cd.i)) { lab[cd.i] = cd.to; moved = true; break; }
+          if (moved) break;
+        }
+      }
+      if (!moved) break;
+    }
+    fixFragments(nodes, lab, adj);
+    const out = new Array(n); nodes.forEach((nd, j) => nd.mem.forEach(i => { out[i] = lab[j]; })); return out;
+  }
+
   function buildOnce(stores, cfg, onProgress, mult, dmult, useChain, doMin) {
     const c = makeCtx(cfg);
     const W = c.weeks, Dn = c.days, S = c.nSales;
@@ -1324,15 +1534,17 @@ tr.click { cursor: pointer; } tr.click td:first-child { white-space: nowrap; } t
     prog('Membagi wilayah salesman');
     // 1) wilayah salesman (seimbang berdasarkan jam kerja)
     const mf = p => (mult && mult.get(p.kode)) || 1;
-    const labS = balancedCluster(stores, S, g => g.reduce((a, p) => a + p.wt * mf(p), 0), 0.03);
+    const wS = p => p.wt * mf(p);
+    let labS = balancedCluster(stores, S, g => g.reduce((a, p) => a + wS(p), 0), 0.03);
+    if (c.atomize || c.gapAware || c.kecBlock) labS = regionPartition(stores, S, wS, { init: labS, atomize: c.atomize, gapAware: c.gapAware, kecBlocks: c.kecBlock, tol: 0.03 });
     stores.forEach((s, i) => s.sales = labS[i]);
     return buildRest(stores, c, prog, dmult, useChain, doMin);
   }
 
   // jenis kunjungan: hasil edit SPV > aturan EC > aturan kelas
   function freqFor(s, c) {
-    if (s.fixFreq) return s.fixFreq;
-    if (c.basis === 'ec' && isFinite(s.ec)) return s.ec >= c.ecM1 ? 4 : s.ec > 0 ? 2 : 1;
+    if (s.fixFreq) return s.fixFreq >= 4 ? 4 : 2;
+    if (c.basis === 'ec' && isFinite(s.ec)) return s.ec >= c.ecM1 ? 4 : 2;
     return c.freqOf(s.kelas);
   }
   function prepare(stores, c) {
@@ -1355,6 +1567,7 @@ tr.click { cursor: pointer; } tr.click td:first-child { white-space: nowrap; } t
       s.effCap = Math.max(1, Math.min(c.capOf(s.zona), 1 + win / (c.svc + Math.max(s.intra, 3))));
       s.wt = perWeek / s.effCap;
     });
+    if (c.atomize) computeAtoms(stores);
   }
 
   function buildRest(stores, c, prog, dmult, useChain, doMin) {
@@ -1374,7 +1587,9 @@ tr.click { cursor: pointer; } tr.click td:first-child { white-space: nowrap; } t
         const tmin = g.reduce((a, p) => a + (p.freq / W) * (c.svc + p.intra) * dm(p), 0) + c.travel(near) + c.rest;
         return Math.max(vis / cap, tmin / (c.lastCheckin - c.start + c.svc));
       };
-      const lab = balancedCluster(mine, Dn, dayLoad, 0.04);
+      const dm = p => (dmult && dmult.get(p.kode)) || 1;
+      let lab = balancedCluster(mine, Dn, dayLoad, 0.04);
+      if (c.atomize || c.gapAware) lab = regionPartition(mine, Dn, p => p.wt * dm(p), { init: lab, atomize: c.atomize, gapAware: false, kecBlocks: false, tol: 0.06 });
       mine.forEach((s, i) => s.day = lab[i]);
     }
     // 3) sebar C dan NT ke pekan agar stabil
@@ -1576,6 +1791,17 @@ tr.click { cursor: pointer; } tr.click td:first-child { white-space: nowrap; } t
       if (weeksOf(best.x).some(w => overflow(R.get(key(best.x.sales, w, best.x.day))) > 0)) { applyMove(best.x, sv); stuckU.add(key(ts, tw, td)); }
     }
 
+    // toko satu titik yang terpisah oleh perbaikan jalur: satukan lagi bila tidak melanggar batas
+    if (doMin && c.atomize) {
+      const byAtom = new Map(); stores.forEach(x => { if (!byAtom.has(x.atom)) byAtom.set(x.atom, []); byAtom.get(x.atom).push(x); });
+      byAtom.forEach(mem => {
+        if (mem.length < 2) return;
+        const cnt = {}; mem.forEach(x => { const k = x.sales + '|' + x.day; cnt[k] = (cnt[k] || 0) + 1; });
+        const ks = Object.keys(cnt); if (ks.length < 2) return;
+        const [ts, td] = ks.sort((a, b) => cnt[b] - cnt[a])[0].split('|').map(Number);
+        mem.forEach(x => { if (x.sales === ts && x.day === td) return; const o = { s: ts, d: td, pen: 0 }; if (evalOption(x, o) != null) applyMove(x, o); });
+      });
+    }
     dbg('sesudah min');
     renumberDays(stores, R, c, key, rebuild);
 
@@ -1599,13 +1825,14 @@ tr.click { cursor: pointer; } tr.click td:first-child { white-space: nowrap; } t
   function build(stores, cfg, onProgress) {
     const prog = onProgress || (() => {});
     const mult = new Map(), dmult = new Map();
-    let best = null, bestScore = Infinity, bestState = null, bestM = null;
+    let best = null, bestScore = Infinity, bestState = null, bestM = null, bestSeed = 1;
     const ITER = 8;
     for (let it = 0; it < ITER; it++) {
       prog('Menyusun (putaran ' + (it + 1) + ')');
-      const res = buildOnce(stores, cfg, null, mult, dmult, false);
+      const seed = it + 1;
+      const res = buildOnce(stores, Object.assign({}, cfg, { seed }), null, mult, dmult, false);
       const sc = scoreOf(res);
-      if (sc < bestScore) { bestScore = sc; best = res; bestM = [new Map(mult), new Map(dmult)]; bestState = stores.map(x => ({ sales: x.sales, day: x.day, phase: x.phase, ntWeek: x.ntWeek })); }
+      if (sc < bestScore) { bestScore = sc; best = res; bestSeed = seed; bestM = [new Map(mult), new Map(dmult)]; bestState = stores.map(x => ({ sales: x.sales, day: x.day, phase: x.phase, ntWeek: x.ntWeek })); }
       if (sc < 1) break;
       // koreksi bobot: rasio beban nyata / beban model per salesman
       const S = res.cfg.nSales;
@@ -1630,7 +1857,7 @@ tr.click { cursor: pointer; } tr.click td:first-child { white-space: nowrap; } t
     {
       prog('Memperbaiki jalur dan mengisi minimal toko per hari');
       const useChain = bestScore >= 1 && needNow <= best.cfg.nSales * 1.02;
-      const res = buildOnce(stores, cfg, null, bestM[0], bestM[1], useChain, true);
+      const res = buildOnce(stores, Object.assign({}, cfg, { seed: bestSeed }), null, bestM[0], bestM[1], useChain, true);
       if (hard(res) <= hard(best)) { bestScore = scoreOf(res); best = res; bestState = stores.map(x => ({ sales: x.sales, day: x.day, phase: x.phase, ntWeek: x.ntWeek })); }
     }
     // kembalikan keadaan toko sesuai hasil terbaik
@@ -1663,7 +1890,7 @@ tr.click { cursor: pointer; } tr.click td:first-child { white-space: nowrap; } t
     if (t.includes('C13') || t.includes('1&3') || t.includes('1DAN3')) return { freq: 2, phase: 0 };
     if (t.includes('C24') || t.includes('2&4') || t.includes('2DAN4')) return { freq: 2, phase: 1 };
     const m = t.match(/PEKAN([1-4])SAJA/) || t.match(/^P([1-4])$/);
-    if (m) return { freq: 1, ntWeek: +m[1] - 1 };
+    if (m) return { freq: 2, phase: (+m[1] - 1) % 2 }; // file lama "Pekan x saja" -> M2 pasangan pekannya
     return null;
   }
 
@@ -1735,9 +1962,9 @@ tr.click { cursor: pointer; } tr.click td:first-child { white-space: nowrap; } t
   function jenisOf(st) {
     if (st.freq >= 4) return 'M1';
     if (st.freq === 2) return st.phase === 0 ? 'M2C13' : 'M2C24';
-    return 'Pekan ' + ((st.ntWeek || 0) + 1) + ' saja';
+    return st.phase === 1 ? 'M2C24' : 'M2C13';
   }
-  const JENIS = ['M1', 'M2C13', 'M2C24', 'Pekan'];
+  const JENIS = ['M1', 'M2C13', 'M2C24'];
   function fmt(min) { const h = Math.floor(min / 60), m = Math.round(min - h * 60); return String(h + (m === 60 ? 1 : 0)).padStart(2, '0') + '.' + String(m === 60 ? 0 : m).padStart(2, '0'); }
 
   function assemble(stores, R, c, key) {
@@ -1803,7 +2030,7 @@ tr.click { cursor: pointer; } tr.click td:first-child { white-space: nowrap; } t
     return { cfg: c, routes, rows, summary, warnings, capTable, asis, stores, need };
   }
 
-  root.JKS = { KELAS, KELAS_LABEL, kelasLabel, fromAssignment, parseJenis, freqFor, jenisOf, JENIS, DEFAULTS, DAY_NAMES, validate, build, schedule, orderRoute, fmt, normKelas, num, makeCtx };
+  root.JKS = { _rp: regionPartition, _prep: prepare, _atoms: computeAtoms, KELAS, KELAS_LABEL, kelasLabel, fromAssignment, parseJenis, freqFor, jenisOf, JENIS, DEFAULTS, DAY_NAMES, validate, build, schedule, orderRoute, fmt, normKelas, num, makeCtx };
 })(typeof window !== 'undefined' ? window : globalThis);
 
 </script>
@@ -1954,8 +2181,8 @@ const fmt = JKS.fmt;
 const nf1 = v => v.toLocaleString('id-ID', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
 const nf0 = v => Math.round(v).toLocaleString('id-ID');
 const KL = k => JKS.kelasLabel(k);
-const fLabel = f => f >= 4 ? 'M1' : f === 2 ? 'M2 (C13/C24)' : '4 pekan sekali';
-const jenisLabel = st => { const j = JKS.jenisOf(st); return j === 'M1' ? 'M1 · tiap pekan' : j === 'M2C13' ? 'M2C13 · pekan 1 & 3' : j === 'M2C24' ? 'M2C24 · pekan 2 & 4' : '4 pekan sekali · pekan ' + (st.ntWeek + 1); };
+const fLabel = f => f >= 4 ? 'M1' : 'M2 (C13/C24)';
+const jenisLabel = st => { const j = JKS.jenisOf(st); return j === 'M1' ? 'M1 · tiap pekan' : j === 'M2C13' ? 'M2C13 · pekan 1 & 3' : 'M2C24 · pekan 2 & 4'; };
 
 // ---------- pengaturan ----------
 const timeKeys = ['start', 'lastCheckin', 'restAt'];
@@ -1966,6 +2193,7 @@ function setForm(cfg) {
   numKeys.forEach(k => { $('s-' + k).value = cfg[k]; });
   timeKeys.forEach(k => { $('s-' + k).value = toTime(cfg[k]); });
   $('s-basis').value = cfg.basis || 'kelas';
+  ['atomize', 'gapAware', 'kecBlock'].forEach(k => { $('s-' + k).checked = !!cfg[k]; });
   zoneBar(); basisUI();
 }
 function readForm() {
@@ -1974,6 +2202,7 @@ function readForm() {
   timeKeys.forEach(k => { c[k] = fromTime($('s-' + k).value); });
   c.nSales = Math.max(1, Math.round(c.nSales)); c.days = Math.round(c.days);
   c.basis = $('s-basis').value;
+  ['atomize', 'gapAware', 'kecBlock'].forEach(k => { c[k] = $('s-' + k).checked; });
   return c;
 }
 function zoneBar() {
@@ -1985,7 +2214,7 @@ function basisUI() {
   $('ec-field').hidden = !ec;
   ['s-fFA', 's-fFP', 's-fA', 's-fB', 's-fC', 's-fNT'].forEach(id => { $(id).closest('.field').hidden = ec; });
   $('ec-hint').innerHTML = ec
-    ? `Rata-rata EC ≥ ${esc(thr)} per bulan → <b>M1</b> (tiap pekan). Di bawah ${esc(thr)} tapi masih ada EC → <b>M2</b> (dibagi C13/C24). EC 0 → 4 pekan sekali. Toko tanpa angka EC memakai aturan kelas.`
+    ? `Rata-rata EC ≥ ${esc(thr)} per bulan → <b>M1</b> (tiap pekan). Di bawah ${esc(thr)} tapi masih ada EC → <b>M2</b> (dibagi C13/C24), termasuk EC 0. Paling jarang 2 pekan sekali. Toko tanpa angka EC memakai aturan kelas.`
     : 'M1 = tiap pekan. M2 dibagi otomatis jadi M2C13 (pekan 1 &amp; 3) dan M2C24 (pekan 2 &amp; 4) supaya isi jalur tiap pekan rata.';
 }
 ['s-basis', 's-ecM1'].forEach(id => $(id).addEventListener('change', () => { basisUI(); if (state.data.length) revalidate(); }));
@@ -2108,7 +2337,7 @@ function revalidate() {
     <div class="check ok"><span>Toko siap disusun</span><b>${v.stores.length}</b></div>
     <div class="check"><span>Flagship Aktif · Pasif</span><b>${kel.FA} · ${kel.FP}</b></div>
     <div class="check"><span>GT A · GT B · GT C · Tidak transaksi</span><b>${kel.A} · ${kel.B} · ${kel.C} · ${kel.NT}</b></div>
-    <div class="check"><span>M1 · M2 · 4 pekan sekali${byEc ? ' (dari EC)' : ''}</span><b>${fq[4]} · ${fq[2]} · ${fq[1]}</b></div>
+    <div class="check"><span>M1 · M2${byEc ? ' (dari EC)' : ''}</span><b>${fq[4]} · ${fq[2]}</b></div>
     ${v.merged ? `<div class="check"><span>Baris berulang (kode &amp; titik sama) digabung</span><b>${v.merged}</b></div>` : ''}
     <div class="check ${out ? 'bad' : 'ok'}"><span>Dikeluarkan dari JKS</span><b>${out}</b></div>
     <div class="check ${wr ? 'warn' : 'ok'}"><span>Peringatan (tetap masuk)</span><b>${wr}</b></div></div>
@@ -2269,7 +2498,7 @@ function renderAll(keep) {
     <div class="kpi"><div class="l">Kebutuhan salesman</div><div class="v ${Math.ceil(R.need - 0.05) > c.nSales ? 'bad' : ''}">${nf1(R.need)}</div><div class="s">${Math.ceil(R.need - 0.05) > c.nSales ? 'perlu ' + Math.ceil(R.need - 0.05) + ' orang, sekarang ' + c.nSales : 'perkiraan · ' + c.nSales + ' orang cukup'}</div></div>
     ${lewatCap ? `<div class="kpi"><div class="l">Melebihi kapasitas</div><div class="v bad">${lewatCap}</div><div class="s">jalur</div></div>` : ''}`;
   $('t-sum').innerHTML = `<tr><th>Salesman</th><th class="n">Toko</th><th class="n" title="Flagship Aktif · Flagship Pasif · GT A · GT B · GT C · Tidak transaksi">FA·FP·A·B·C·NT</th><th class="n">Dekat·Sedang·Jauh</th><th class="n">M1·M2C13·M2C24</th><th class="n">Kunjungan /4 pekan</th><th class="n">Toko /hari</th><th class="n">Jam kerja /hari</th><th class="n">Check-in terakhir</th><th class="n">km /2 pekan</th><th>Status</th></tr>` +
-    R.summary.map(s => `<tr class="click" data-s="${s.sales}"><td><span class="sw" style="background:${sc(s.sales)}"></span>${salesName(s.sales)}</td><td class="n">${s.toko}</td><td class="n">${s.kelas.join('·')}</td><td class="n">${s.zona.join('·')}</td><td class="n">${s.jenis.slice(0, 3).join('·')}${s.jenis[3] ? ' +' + s.jenis[3] + ' (4 pekan)' : ''}</td><td class="n">${s.kunjungan}</td><td class="n">${nf1(s.rataToko)}</td><td class="n">${nf1(s.rataJam)}</td><td class="n">${fmt(s.lastMax)}</td><td class="n">${nf0(s.km2)}</td><td>${s.lewat || s.lewatCap ? `<span class="pill bad">${s.lewat + s.lewatCap} jalur bermasalah</span>` : s.kurang ? `<span class="pill warn">${s.kurang} jalur kurang toko</span>` : '<span class="pill ok">Aman</span>'}</td></tr>`).join('');
+    R.summary.map(s => `<tr class="click" data-s="${s.sales}"><td><span class="sw" style="background:${sc(s.sales)}"></span>${salesName(s.sales)}</td><td class="n">${s.toko}</td><td class="n">${s.kelas.join('·')}</td><td class="n">${s.zona.join('·')}</td><td class="n">${s.jenis.slice(0, 3).join('·')}</td><td class="n">${s.kunjungan}</td><td class="n">${nf1(s.rataToko)}</td><td class="n">${nf1(s.rataJam)}</td><td class="n">${fmt(s.lastMax)}</td><td class="n">${nf0(s.km2)}</td><td>${s.lewat || s.lewatCap ? `<span class="pill bad">${s.lewat + s.lewatCap} jalur bermasalah</span>` : s.kurang ? `<span class="pill warn">${s.kurang} jalur kurang toko</span>` : '<span class="pill ok">Aman</span>'}</td></tr>`).join('');
   $('t-sum').querySelectorAll('tr.click').forEach(tr => tr.onclick = () => { filt.s = +tr.dataset.s; filt.d = -1; syncFilters(); renderDetail(); drawMap(); $('map').scrollIntoView({ behavior: 'smooth', block: 'center' }); });
   $('export-hint').textContent = 'Sheet: JKS, Jalur (dengan link Google Maps), Ringkasan, Toko per Salesman, Toko Bermasalah' + (state.edits.length ? ', Riwayat Edit' : '');
   renderEditPanel();
@@ -2444,7 +2673,7 @@ function doSwap(a, b) {
 }
 
 // ---------- edit supervisor ----------
-const JENIS_OPTS = [['M1', 'M1 · tiap pekan'], ['M2C13', 'M2C13 · pekan 1 & 3'], ['M2C24', 'M2C24 · pekan 2 & 4'], ['Pekan 1 saja', 'Pekan 1 saja'], ['Pekan 2 saja', 'Pekan 2 saja'], ['Pekan 3 saja', 'Pekan 3 saja'], ['Pekan 4 saja', 'Pekan 4 saja']];
+const JENIS_OPTS = [['M1', 'M1 · tiap pekan'], ['M2C13', 'M2C13 · pekan 1 & 3'], ['M2C24', 'M2C24 · pekan 2 & 4']];
 const describe = st => salesName(st.sales) + ' · ' + DAYS[st.day] + ' · ' + JKS.jenisOf(st);
 function renderEditPanel() {
   const R = state.res; if (!R) return;
@@ -2555,13 +2784,13 @@ $('btn-export').onclick = () => {
   links.forEach((gl, i) => gl.slice(0, 2).forEach((u, j) => { const a = XLSX.utils.encode_cell({ r: i + 1, c: 10 + j }); ws5[a].l = { Target: u.url, Tooltip: 'Buka di Google Maps' }; }));
   ws5['!cols'] = [14, 7, 8, 6, 9, 13, 18, 11, 9, 9, 18, 20].map(w => ({ wch: w }));
   XLSX.utils.book_append_sheet(wb, ws5, 'Jalur');
-  const sum = [['Salesman', 'Jumlah toko', 'Flagship Aktif', 'Flagship Pasif', 'GT A', 'GT B', 'GT C', 'Tidak transaksi', 'M1', 'M2C13', 'M2C24', '4 pekan sekali (Pekan x saja)', 'Toko Dekat', 'Toko Sedang', 'Toko Jauh', 'Kunjungan per 4 pekan', 'Jalur', 'Rata-rata toko per hari', 'Rata-rata jam kerja per hari', 'Jam kerja terpanjang', 'Check-in terakhir paling lambat', 'km per 2 pekan', 'Jalur lewat batas', 'Jalur lebih dari kapasitas']];
+  const sum = [['Salesman', 'Jumlah toko', 'Flagship Aktif', 'Flagship Pasif', 'GT A', 'GT B', 'GT C', 'Tidak transaksi', 'M1', 'M2C13', 'M2C24', 'Toko Dekat', 'Toko Sedang', 'Toko Jauh', 'Kunjungan per 4 pekan', 'Jalur', 'Rata-rata toko per hari', 'Rata-rata jam kerja per hari', 'Jam kerja terpanjang', 'Check-in terakhir paling lambat', 'km per 2 pekan', 'Jalur lewat batas', 'Jalur lebih dari kapasitas']];
   R.summary.forEach(s => sum.push([salesName(s.sales), s.toko, ...s.kelas, ...s.jenis, ...s.zona, s.kunjungan, s.jalur, +s.rataToko.toFixed(1), +s.rataJam.toFixed(2), +s.maxJam.toFixed(2), fmt(s.lastMax), Math.round(s.km2), s.lewat, s.lewatCap]));
   sum.push([], ['Pengaturan yang dipakai'],
     ['Titik depo', c.depotLat + ', ' + c.depotLng], ['Jumlah salesman', c.nSales], ['Hari kerja per pekan', c.days], ['Berangkat', fmt(c.start)], ['Batas check-in terakhir', fmt(c.lastCheckin)],
     ['Waktu di toko (menit)', c.svc], ['Istirahat (menit)', c.rest], ['Faktor belokan', c.roadFactor], ['Kecepatan', c.v1 + ' km/jam untuk ' + c.vBreak + ' km pertama, ' + c.v2 + ' km/jam sisanya'],
     ['Zona', 'Dekat ≤' + c.zoneNear + ' km, Sedang ≤' + c.zoneMid + ' km, Jauh >' + c.zoneMid + ' km'], ['Kapasitas per hari', 'Dekat ' + c.capNear + ', Sedang ' + c.capMid + ', Jauh ' + c.capFar],
-    c.basis === 'ec' ? ['Jenis kunjungan', 'Dari rata-rata EC 3 bulan: EC ≥ ' + c.ecM1 + ' → M1, di bawahnya → M2, EC 0 → 4 pekan sekali'] : ['Jenis kunjungan per kelas', JKS.KELAS.map(k => KL(k) + ' ' + fLabel(c['f' + k])).join(', ')], ['Edit supervisor', state.edits.length + ' perubahan'], ['Disusun', new Date().toLocaleString('id-ID') + (state.sample ? ' (data contoh sintetis)' : ' · ' + state.fileName)]);
+    c.basis === 'ec' ? ['Jenis kunjungan', 'Dari rata-rata EC 3 bulan: EC ≥ ' + c.ecM1 + ' → M1, di bawahnya (termasuk EC 0) → M2'] : ['Jenis kunjungan per kelas', JKS.KELAS.map(k => KL(k) + ' ' + fLabel(c['f' + k])).join(', ')], ['Logika wilayah', [c.atomize ? 'atom toko satu titik' : '', c.gapAware ? 'hindari celah/sungai' : '', c.kecBlock ? 'blok kecamatan' : ''].filter(Boolean).join(', ') || 'standar'], ['Edit supervisor', state.edits.length + ' perubahan'], ['Disusun', new Date().toLocaleString('id-ID') + (state.sample ? ' (data contoh sintetis)' : ' · ' + state.fileName)]);
   const ws2 = XLSX.utils.aoa_to_sheet(sum); ws2['!cols'] = [{ wch: 26 }].concat(new Array(23).fill({ wch: 12 }));
   XLSX.utils.book_append_sheet(wb, ws2, 'Ringkasan');
   const per = [['Salesman', 'Hari', 'Kode', 'Nama', 'Kelas', 'Jenis Kunjungan', 'Zona', 'Pekan kunjungan', 'Kunjungan per 4 pekan', 'Jarak dari depo (km)', 'Kecamatan', 'Salesman di file', 'Omset', 'Rata-rata EC', 'Latitude', 'Longitude', 'Diedit SPV']];
