@@ -1753,6 +1753,7 @@ tr.click { cursor: pointer; } tr.click td:first-child { white-space: nowrap; } t
     prog('Mengisi jalur yang terlalu sedikit');
     const dbg = tag => { if (!globalThis.JKS_DEBUG2) return; let l = 0, o = 0, u = 0; R.forEach(r => { if (r.sc.lastCheckin > c.lastCheckin) l++; if (r.order.length > r.cap) o++; if (r.order.length && r.order.length < r.min) u++; }); console.log(tag, 'lewat', l, 'over', o, 'under', u); };
     dbg('sebelum min');
+    if (doMin && !globalThis.NO_TIDY) tidyStrays([false, false]);
     const deficit = r => r.order.length ? Math.max(0, r.min - r.order.length) : 0;
     const stuckU = new Set();
     for (let it = 0; doMin && it < 1500; it++) {
@@ -1803,6 +1804,44 @@ tr.click { cursor: pointer; } tr.click td:first-child { white-space: nowrap; } t
       });
     }
     dbg('sesudah min');
+    if (doMin && !globalThis.NO_TIDY) tidyStrays([false, true]);
+    // 7) rapikan toko "nyasar": toko yang tetangga terdekatnya hampir semua milik salesman/hari lain
+    //    dipindah ke sana, selama jalur tujuan tetap di bawah 16.00 dan kapasitas
+    function tidyStrays(prot) {
+      const K = 5;
+      const nbrs = new Map(stores.map(st => [st, stores.filter(t => t !== st).map(t => [Math.hypot(st.x - t.x, st.y - t.y), t]).sort((a, b) => a[0] - b[0]).slice(0, K)]));
+      const unitOf = st => (c.atomize ? stores.filter(x => x.atom === st.atom && x.sales === st.sales && x.day === st.day) : [st]);
+      const optsTo = (st, s, d) => st.freq === 2 ? [{ s, d, phase: st.phase, pen: 0 }, { s, d, phase: 1 - st.phase, pen: 0 }] : [{ s, d, pen: 0 }];
+      let level = 'sales';
+      const tryUnit = (unit, s, d) => {
+        const log = [];
+        for (const x of unit) {
+          if (prot[level === 'sales' ? 0 : 1] && weeksOf(x).some(w => { const sr = R.get(key(x.sales, w, x.day)); return sr.order.length >= sr.min && sr.order.length - 1 < sr.min; })) { for (let i = log.length - 1; i >= 0; i--) applyMove(log[i][0], log[i][1]); return false; }
+          let bo = null, bc = Infinity;
+          for (const o of optsTo(x, s, d)) { const cost = evalOption(x, o); if (cost != null && cost < bc) { bc = cost; bo = o; } }
+          if (!bo) { for (let i = log.length - 1; i >= 0; i--) applyMove(log[i][0], log[i][1]); return false; }
+          log.push([x, snap(x)]); applyMove(x, bo);
+        }
+        return true;
+      };
+      for (level of ['sales', 'day']) {
+        for (let pass = 0; pass < 3; pass++) {
+          let movedAny = false;
+          const done = new Set();
+          for (const st of stores) {
+            if (done.has(st)) continue;
+            const nb = nbrs.get(st); if (!nb.length || nb[0][0] > 3) continue;
+            const other = level === 'sales' ? nb.filter(([, t]) => t.sales !== st.sales) : nb.filter(([, t]) => t.sales === st.sales && t.day !== st.day);
+            if (other.length < 4) continue;
+            const v = {}; other.forEach(([, t]) => { const k = t.sales + '|' + t.day; v[k] = (v[k] || 0) + 1; });
+            const [s, d] = Object.keys(v).sort((a, b) => v[b] - v[a])[0].split('|').map(Number);
+            const unit = unitOf(st); unit.forEach(x => done.add(x));
+            if (tryUnit(unit, s, d)) movedAny = true;
+          }
+          if (!movedAny) break;
+        }
+      }
+    }
     renumberDays(stores, R, c, key, rebuild);
 
     return assemble(stores, R, c, key);
