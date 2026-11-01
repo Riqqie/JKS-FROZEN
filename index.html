@@ -1756,7 +1756,11 @@ tr.click { cursor: pointer; } tr.click td:first-child { white-space: nowrap; } t
       moved.set(st.kode, (moved.get(st.kode) || 0) + 1);
       st._why = stage;
     };
+    // pindah salesman hanya ke wilayah yang menempel: toko tidak boleh jadi lebih jauh dari rekan wilayahnya (cegah irisan)
+    const nearestOf = (st, s) => { let bd = Infinity; for (const x of stores) if (x !== st && x.sales === s) { const d = Math.hypot(st.x - x.x, st.y - x.y); if (d < bd) bd = d; } return bd; };
+    const crossOk = (st, s) => s === st.sales || nearestOf(st, s) <= Math.max(2, Math.min(5, nearestOf(st, st.sales)));
     const evalOption = (st, o) => {
+      if (!crossOk(st, o.s)) return null;
       const tmp = Object.assign({}, st, { sales: o.s, day: o.d, phase: o.phase != null ? o.phase : st.phase, ntWeek: o.ntWeek != null ? o.ntWeek : st.ntWeek });
       let cost = o.pen;
       for (const w of weeksOf(tmp)) {
@@ -1783,6 +1787,7 @@ tr.click { cursor: pointer; } tr.click td:first-child { white-space: nowrap; } t
         const opts = optionsFor(x).sort((a, b) => a.pen - b.pen).slice(0, 14);
         for (const o of opts) {
           if (chainBudget-- <= 0 || Date.now() > deadline) return false;
+          if (!crossOk(x, o.s)) continue;
           const sx = snap(x);
           applyMove(x, o);
           const log = [[x, sx]];
@@ -1933,7 +1938,7 @@ tr.click { cursor: pointer; } tr.click td:first-child { white-space: nowrap; } t
         const log = [];
         if (unit.some(x => (moved.get(x.kode) || 0) >= 99)) return false;
         for (const x of unit) {
-          if (prot[level === 'sales' ? 0 : 1] && weeksOf(x).some(w => { const sr = R.get(key(x.sales, w, x.day)); return sr.order.length >= sr.min && sr.order.length - 1 < sr.min; })) { for (let i = log.length - 1; i >= 0; i--) applyMove(log[i][0], log[i][1]); return false; }
+          if (prot[level === 'day' ? 1 : 0] && weeksOf(x).some(w => { const sr = R.get(key(x.sales, w, x.day)); return sr.order.length >= sr.min && sr.order.length - 1 < sr.min; })) { for (let i = log.length - 1; i >= 0; i--) applyMove(log[i][0], log[i][1]); return false; }
           let bo = null, bc = Infinity;
           for (const o of optsTo(x, s, d)) { const cost = evalOption(x, o); if (cost != null && cost < bc) { bc = cost; bo = o; } }
           if (!bo) { for (let i = log.length - 1; i >= 0; i--) applyMove(log[i][0], log[i][1]); return false; }
@@ -1941,12 +1946,21 @@ tr.click { cursor: pointer; } tr.click td:first-child { white-space: nowrap; } t
         }
         return true;
       };
-      for (level of ['sales', 'day']) {
+      for (level of ['sales', 'outlier', 'day']) {
         for (let pass = 0; pass < 3; pass++) {
           let movedAny = false;
           const done = new Set();
           for (const st of stores) {
             if (done.has(st)) continue;
+            if (level === 'outlier') {
+              // toko pencilan: jauh dari toko salesman sendiri, tapi dekat toko salesman lain -> memperluas wilayah dan bikin irisan
+              let dOwn = Infinity, dOth = Infinity, tgt = null;
+              for (const t of stores) { if (t === st) continue; const d = Math.hypot(st.x - t.x, st.y - t.y); if (t.sales === st.sales) { if (d < dOwn) dOwn = d; } else if (d < dOth) { dOth = d; tgt = t; } }
+              if (!tgt || !(dOwn > Math.max(1.5, 2 * dOth))) continue;
+              const unit = unitOf(st); unit.forEach(x => done.add(x));
+              if (tryUnit(unit, tgt.sales, tgt.day)) movedAny = true;
+              continue;
+            }
             const nb = nbrs.get(st); if (!nb.length || nb[0][0] > 3) continue;
             const other = level === 'sales' ? nb.filter(([, t]) => t.sales !== st.sales) : nb.filter(([, t]) => t.sales === st.sales && t.day !== st.day);
             if (other.length < 4) continue;
@@ -3085,13 +3099,17 @@ $('btn-show').onclick = () => {
 
 // ---------- perbaiki otomatis ----------
 function busy(on, msg) { $('busy').hidden = !on; if (msg) $('busy-msg').textContent = msg; }
+function hullXY(pts) { const p = pts.slice().sort((a, b) => a[0] - b[0] || a[1] - b[1]); if (p.length < 3) return p; const cr = (o, a, b) => (a[0] - o[0]) * (b[1] - o[1]) - (a[1] - o[1]) * (b[0] - o[0]); const lo = [], up = []; for (const q of p) { while (lo.length >= 2 && cr(lo[lo.length - 2], lo[lo.length - 1], q) <= 0) lo.pop(); lo.push(q); } for (let i = p.length - 1; i >= 0; i--) { const q = p[i]; while (up.length >= 2 && cr(up[up.length - 2], up[up.length - 1], q) <= 0) up.pop(); up.push(q); } return lo.slice(0, -1).concat(up.slice(0, -1)); }
+function inHull(h, x, y) { if (h.length < 3) return false; for (let i = 0; i < h.length; i++) { const a = h[i], b = h[(i + 1) % h.length]; if ((b[0] - a[0]) * (y - a[1]) - (b[1] - a[1]) * (x - a[0]) < 0) return false; } return true; }
 function jksMetrics(R) {
   const c = R.cfg, act = R.routes.filter(r => r.order.length), P = R.stores;
+  const H = []; for (let s = 0; s < c.nSales; s++) H.push(hullXY(P.filter(p => p.sales === s).map(p => [p.x, p.y])));
+  const irisan = P.filter(p => H.some((h, s) => s !== p.sales && inHull(h, p.x, p.y))).length;
   let stray = 0;
   P.forEach(p => { const nb = []; P.forEach(q => { if (q === p) return; const d = Math.hypot(p.x - q.x, p.y - q.y); if (nb.length < 5 || d < nb[4][0]) { nb.push([d, q]); nb.sort((a, b) => a[0] - b[0]); if (nb.length > 5) nb.pop(); } }); if (nb.length && nb[0][0] <= 3 && nb.filter(([, q]) => q.sales !== p.sales).length >= 4) stray++; });
   const kec = {}; P.forEach(x => { if (!x.kec) return; (kec[x.kec] = kec[x.kec] || new Set()).add(x.sales); });
   const J = R.summary.map(s => s.rataJam);
-  return { lewat: act.filter(r => r.sc.lastCheckin > c.lastCheckin).length, cap: act.filter(r => r.order.length > r.cap).length, kurang: act.filter(r => r.order.length < r.min).length, stray, kec: Object.keys(kec).length ? Object.values(kec).filter(s => s.size > 1).length : null, km: Math.round(act.reduce((a, r) => a + r.sc.km, 0)), last: Math.max(...act.map(r => r.sc.lastCheckin)), spread: Math.max(...J) - Math.min(...J), kunj: R.rows.length };
+  return { irisan, lewat: act.filter(r => r.sc.lastCheckin > c.lastCheckin).length, cap: act.filter(r => r.order.length > r.cap).length, kurang: act.filter(r => r.order.length < r.min).length, stray, kec: Object.keys(kec).length ? Object.values(kec).filter(s => s.size > 1).length : null, km: Math.round(act.reduce((a, r) => a + r.sc.km, 0)), last: Math.max(...act.map(r => r.sc.lastCheckin)), spread: Math.max(...J) - Math.min(...J), kunj: R.rows.length };
 }
 const jenisTxt = (freq, phase) => freq >= 4 ? 'M1' : phase === 1 ? 'M2C24' : 'M2C13';
 $('btn-fix').onclick = () => {
@@ -3134,7 +3152,8 @@ function renderFix() {
         ${row('Check-in terakhir paling malam', b.last, a.last, true, fmt)}
         ${row('Jalur melebihi kapasitas', b.cap, a.cap, true)}
         ${row('Jalur di bawah minimal', b.kurang, a.kurang, true)}
-        ${row('Toko nyasar ke wilayah salesman lain', b.stray, a.stray, true)}
+        ${row('Toko di dalam wilayah salesman lain (irisan)', b.irisan, a.irisan, true)}
+        ${row('Toko nyasar (dikelilingi toko salesman lain)', b.stray, a.stray, true)}
         ${b.kec != null ? row('Kecamatan dipegang >1 salesman', b.kec, a.kec, true) : ''}
         ${row('Selisih jam kerja antar salesman', b.spread, a.spread, true, v => nf1(v) + ' jam')}
         ${row('Km per 4 pekan', b.km, a.km, true)}
@@ -3142,7 +3161,7 @@ function renderFix() {
       </table></div>
       <div>
         <p style="margin:0"><b>${F.changes.length}</b> dari ${state.res.stores.length} toko berubah: ${pindahS} pindah salesman, ${pindahD} pindah hari, ${pindahW} hanya geser pekan C13/C24${pindahJ ? `; ${pindahJ} ganti jenis kunjungan (M1/M2)` : ''}.</p>
-        ${a.lewat || a.cap ? `<p class="hint" style="margin-top:6px;color:var(--bad)">Masih ada ${a.lewat + a.cap} jalur bermasalah. Biasanya berisi toko yang dikunci, atau tidak ada jalur tetangga yang masih muat. Rapikan manual lewat matriks atau edit per toko.</p>` : ''}
+        ${a.lewat || a.cap ? `<p class="hint" style="margin-top:6px;color:var(--bad)">Masih ada ${a.lewat + a.cap} jalur bermasalah. Biasanya karena toko dikunci, atau wilayahnya terpencil sehingga memindahkannya ke salesman lain akan membuat wilayah beririsan. ${F.level === 'ringan' ? 'Coba tingkat Sedang, yang merapikan batas wilayah, ' : 'Rapikan '}manual lewat matriks atau edit per toko.</p>` : ''}
         <div class="chg-why">${Object.entries(why).sort((x, y) => y[1] - x[1]).map(([k, v]) => `<span class="pill">${esc(k)} · ${v}</span>`).join('')}</div>
         <div class="row"><button class="btn" type="button" id="btn-fix-orig">Lihat JKS asli</button><button class="btn" type="button" id="btn-fix-again">Kembali ke hasil perbaikan</button><span class="hint">Edit manual tetap bisa dilakukan di bawah. Ekspor menyertakan sheet Perubahan Otomatis.</span></div>
       </div>
