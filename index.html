@@ -733,12 +733,23 @@ h1 small { display: block; font-family: var(--f-mono); font-weight: 400; font-si
 .btn.big { width: 100%; padding: 12px; font-size: 15px; font-family: var(--f-display); font-stretch: 90%; letter-spacing: .01em; }
 .btn:disabled { opacity: .45; cursor: not-allowed; }
 .btn.on { background: var(--ink); color: var(--surface); border-color: var(--ink); }
-.modes { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; padding: 4px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); }
+.modes { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 4px; padding: 4px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); }
 .modes button { font: inherit; font-weight: 600; font-size: 13px; padding: 9px 8px; border: 0; border-radius: 6px; background: transparent; color: var(--muted); cursor: pointer; line-height: 1.25; }
 .modes button[aria-pressed="true"] { background: var(--ink); color: var(--surface); }
 .modes button small { display: block; font-weight: 400; font-size: 11.5px; opacity: .8; }
 body.m-edit .only-build { display: none !important; }
 body:not(.m-edit) .only-edit { display: none !important; }
+body.m-fix .only-plainedit { display: none !important; }
+body:not(.m-fix) .only-fix { display: none !important; }
+.lvl { display: grid; gap: 8px; }
+.lvl label { display: grid; grid-template-columns: auto 1fr; gap: 2px 10px; align-items: start; padding: 10px 12px; border: 1px solid var(--line); border-radius: var(--r); cursor: pointer; background: var(--surface-2); }
+.lvl label:has(input:checked) { border-color: var(--accent); background: var(--accent-soft); }
+.lvl input { margin-top: 3px; grid-row: span 2; }
+.lvl b { font-size: 13.5px; }
+.lvl span { font-size: 12.5px; color: var(--muted); grid-column: 2; }
+.ba td.n b.up { color: var(--ok); } .ba td.n b.down { color: var(--bad); }
+.chg-why { display: flex; flex-wrap: wrap; gap: 6px; margin: 10px 0; }
+@media (max-width: 760px) { .fixgrid { grid-template-columns: 1fr !important; } .modes button small { display: none; } }
 
 .fileinfo { font-size: 13px; margin-top: 10px; padding: 8px 10px; background: var(--surface-2); border-radius: 6px; display: flex; flex-wrap: wrap; gap: 4px 10px; align-items: center; }
 .fileinfo .tag { font-family: var(--f-mono); font-size: 11px; color: var(--muted); }
@@ -884,8 +895,9 @@ tr.click { cursor: pointer; } tr.click td:first-child { white-space: nowrap; } t
   <div class="layout">
     <aside class="side">
       <div class="modes" role="group" aria-label="Mode aplikasi">
-        <button type="button" id="mode-build" aria-pressed="true">Susun JKS baru<small>dari daftar toko</small></button>
-        <button type="button" id="mode-edit" aria-pressed="false">Edit JKS yang ada<small>upload JKS buatan sendiri</small></button>
+        <button type="button" id="mode-build" aria-pressed="true">Susun baru<small>dari daftar toko</small></button>
+        <button type="button" id="mode-edit" aria-pressed="false">Edit manual<small>JKS yang sudah ada</small></button>
+        <button type="button" id="mode-fix" aria-pressed="false">Perbaiki otomatis<small>JKS yang sudah ada</small></button>
       </div>
       <section class="panel" id="p-data">
         <h2><span class="step">1</span><span id="data-title">Data toko</span></h2>
@@ -971,7 +983,22 @@ tr.click { cursor: pointer; } tr.click td:first-child { white-space: nowrap; } t
       </section>
 
       <button class="btn primary big only-build" id="btn-run" type="button" disabled>3 · Susun JKS</button>
-      <button class="btn primary big only-edit" id="btn-show" type="button" disabled>3 · Tampilkan JKS untuk diedit</button>
+      <section class="panel only-fix" id="p-fix">
+        <h2><span class="step">3</span>Tingkat perbaikan</h2>
+        <div class="lvl">
+          <label><input type="radio" name="fixlvl" value="ringan"><b>Ringan</b><span>Hanya membereskan pelanggaran: jalur lewat batas, melebihi kapasitas, toko nyasar, toko satu titik yang terpisah.</span></label>
+          <label><input type="radio" name="fixlvl" value="sedang" checked><b>Sedang</b><span>Ringan + merapikan batas wilayah salesman dan area hari yang terpecah atau tumpang tindih.</span></label>
+          <label><input type="radio" name="fixlvl" value="penuh"><b>Penuh</b><span>Sedang + meratakan jam kerja antar salesman. Perubahan paling banyak.</span></label>
+        </div>
+        <p class="hint" style="margin-top:10px">Toko yang tidak boleh dipindah: beri kolom <b>Kunci</b> berisi "Ya" di file. Jenis kunjungan (M1/M2) tidak diubah, kecuali dipilih di bawah; pekan C13/C24 bisa bergeser.</p>
+        <div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--line);display:grid;gap:8px">
+          <label class="tg"><input type="checkbox" id="fx-ec"> <b>Ubah M1/M2 dari rata-rata EC 3 bulan</b></label>
+          <div class="field" id="fx-ec-f" style="max-width:220px"><label for="fx-ecM1">EC minimal untuk M1</label><div class="unit"><input type="number" step="0.1" min="0.1" id="fx-ecM1" value="3"><em>EC/bln</em></div></div>
+          <p class="hint" id="fx-ec-hint"></p>
+        </div>
+      </section>
+      <button class="btn primary big only-edit only-plainedit" id="btn-show" type="button" disabled>3 · Tampilkan JKS untuk diedit</button>
+      <button class="btn primary big only-fix" id="btn-fix" type="button" disabled>4 · Perbaiki JKS otomatis</button>
     </aside>
 
     <main class="main" id="results">
@@ -983,6 +1010,7 @@ tr.click { cursor: pointer; } tr.click td:first-child { white-space: nowrap; } t
         Aplikasi tidak menyusun ulang: JKS tampil apa adanya di peta dan matriks, lalu bisa diedit dan diekspor.</span>
       </section>
       <div id="out" hidden>
+        <section class="panel" id="p-fixres" hidden></section>
         <section class="panel">
           <h2>Ringkasan hasil</h2>
           <div class="kpis" id="kpis"></div>
@@ -1399,6 +1427,7 @@ tr.click { cursor: pointer; } tr.click td:first-child { white-space: nowrap; } t
       const biggest = {}; comps.forEach((c, id) => { if (biggest[c.lab] == null || c.mem.length > comps[biggest[c.lab]].mem.length) biggest[c.lab] = id; });
       comps.forEach((c, id) => {
         if (biggest[c.lab] === id) return;
+        if (lockKey && c.mem.some(x => lockKey[x])) return;
         const votes = {}; c.mem.forEach(x => adj[x].forEach(y => { if (lab[y] !== c.lab) votes[lab[y]] = (votes[lab[y]] || 0) + 1; }));
         const ks = Object.keys(votes); if (!ks.length) return; // pulau terpisah: biarkan
         const to = +ks.sort((a, b) => votes[b] - votes[a])[0];
@@ -1444,7 +1473,8 @@ tr.click { cursor: pointer; } tr.click td:first-child { white-space: nowrap; } t
     const keyOf = p => opt.kecBlocks && p.kec ? 'k:' + p.kec : opt.atomize && p.atom != null ? 'a:' + p.atom : 'i:' + p.kode;
     const nodeMap = new Map(), nodes = [];
     items.forEach((p, i) => { const kk = keyOf(p); let nd = nodeMap.get(kk); if (!nd) { nd = { mem: [], x: 0, y: 0, w: 0 }; nodeMap.set(kk, nd); nodes.push(nd); } nd.mem.push(i); });
-    nodes.forEach(nd => { nd.mem.forEach(i => { nd.x += items[i].x; nd.y += items[i].y; nd.w += weightOf(items[i]); }); nd.x /= nd.mem.length; nd.y /= nd.mem.length; nd.w = Math.max(nd.w, 1e-6); });
+    nodes.forEach(nd => { nd.mem.forEach(i => { nd.x += items[i].x; nd.y += items[i].y; nd.w += weightOf(items[i]); }); nd.x /= nd.mem.length; nd.y /= nd.mem.length; nd.w = Math.max(nd.w, 1e-6); nd.locked = !!(opt.lockOf && nd.mem.some(i => opt.lockOf(items[i]))); });
+    const LK = nodes.map(nd => nd.locked);
     const m = nodes.length;
     if (m <= k) { const lab = new Array(n); nodes.forEach((nd, j) => nd.mem.forEach(i => { lab[i] = j % k; })); return lab; }
     const adj = neighborGraph(nodes, Math.min(8, m - 1), opt.gapAware);
@@ -1485,6 +1515,7 @@ tr.click { cursor: pointer; } tr.click td:first-child { white-space: nowrap; } t
     for (let pass = 0; pass < 6; pass++) {
       let moved = 0; const L = loads();
       for (let i = 0; i < m; i++) {
+        if (LK[i]) continue;
         const v = {}; adj[i].forEach(j => { v[lab[j]] = (v[lab[j]] || 0) + 1; });
         const own = v[lab[i]] || 0; let bl = -1, bc = own;
         Object.keys(v).forEach(l => { if (+l !== lab[i] && v[l] > bc) { bc = v[l]; bl = +l; } });
@@ -1492,7 +1523,7 @@ tr.click { cursor: pointer; } tr.click td:first-child { white-space: nowrap; } t
       }
       if (!moved) break;
     }
-    fixFragments(nodes, lab, adj);
+    fixFragments(nodes, lab, adj, LK);
     // 5) pemerataan beban: geser simpul di perbatasan dari wilayah berat ke tetangganya yang lebih ringan,
     //    tanpa memutus wilayah asal (cek konektivitas)
     const connectedWithout = (ci, skip) => {
@@ -1515,6 +1546,7 @@ tr.click { cursor: pointer; } tr.click td:first-child { white-space: nowrap; } t
         nodes.forEach((nd, i) => { const c0 = cents[lab[i]]; c0.x += nd.x * nd.w; c0.y += nd.y * nd.w; c0.w += nd.w; }); cents.forEach(c0 => { if (c0.w) { c0.x /= c0.w; c0.y /= c0.w; } });
         let best = null;
         for (let i = 0; i < m; i++) {
+          if (LK[i]) continue;
           // dev>0: dorong simpul milik ci ke tetangga ringan; dev<0: tarik simpul tetangga berat ke ci
           const from = dev > 0 ? ci : lab[i];
           if (dev > 0 ? lab[i] !== ci : lab[i] === ci) continue;
@@ -1529,7 +1561,7 @@ tr.click { cursor: pointer; } tr.click td:first-child { white-space: nowrap; } t
         if (best && connectedWithout(best.from, best.i)) { lab[best.i] = best.to; moved = true; break; }
         if (best) { // coba kandidat lain yang tidak memutus wilayah
           const cand = [];
-          for (let i = 0; i < m; i++) { const from = dev > 0 ? ci : lab[i]; if (dev > 0 ? lab[i] !== ci : lab[i] === ci) continue; adj[i].forEach(j => { const to = lab[j]; if (to === lab[i] || (dev < 0 && to !== ci)) return; if (C[to] + nodes[i].w > C[from] - nodes[i].w + tol) return; cand.push({ i, from, to, cost: Math.sqrt(d2(nodes[i], cents[to])) - Math.sqrt(d2(nodes[i], cents[from])) }); }); }
+          for (let i = 0; i < m; i++) { if (LK[i]) continue; const from = dev > 0 ? ci : lab[i]; if (dev > 0 ? lab[i] !== ci : lab[i] === ci) continue; adj[i].forEach(j => { const to = lab[j]; if (to === lab[i] || (dev < 0 && to !== ci)) return; if (C[to] + nodes[i].w > C[from] - nodes[i].w + tol) return; cand.push({ i, from, to, cost: Math.sqrt(d2(nodes[i], cents[to])) - Math.sqrt(d2(nodes[i], cents[from])) }); }); }
           cand.sort((a, b) => a.cost - b.cost);
           for (const cd of cand.slice(0, 25)) if (connectedWithout(cd.from, cd.i)) { lab[cd.i] = cd.to; moved = true; break; }
           if (moved) break;
@@ -1537,8 +1569,70 @@ tr.click { cursor: pointer; } tr.click td:first-child { white-space: nowrap; } t
       }
       if (!moved) break;
     }
-    fixFragments(nodes, lab, adj);
+    fixFragments(nodes, lab, adj, LK);
     const out = new Array(n); nodes.forEach((nd, j) => nd.mem.forEach(i => { out[i] = lab[j]; })); return out;
+  }
+
+  // ---------- perbaiki JKS yang sudah ada: pembagian supervisor jadi titik awal ----------
+  // level: 'ringan' (hanya pelanggaran), 'sedang' (+ rapikan batas wilayah & area hari), 'penuh' (+ ratakan beban)
+  function improve(stores, cfg, opt) {
+    opt = opt || {};
+    const c = makeCtx(cfg), lvl = opt.level || 'sedang';
+    const orig = new Map(stores.map(s => [s.kode, { sales: s.sales, day: s.day, phase: s.phase, freq: s.fixFreq }]));
+    // jenis kunjungan dari rata-rata EC 3 bulan (toko tanpa EC tetap memakai jenis dari file)
+    const jenisBaru = new Set();
+    if (opt.ecM1 != null && isFinite(opt.ecM1)) stores.forEach(s => {
+      if (!isFinite(s.ec)) return;
+      const f = s.ec >= opt.ecM1 ? 4 : 2;
+      if (f !== s.fixFreq) { s.fixFreq = f; jenisBaru.add(s.kode); }
+    });
+    prepare(stores, c);
+    stores.forEach(s => { s._why = null; s.locked = !!s.locked; });
+    // toko yang baru jadi M2 ikut pekan toko M2 terdekat di salesman-hari yang sama, supaya toko berdekatan tetap sepekan
+    stores.forEach(s => {
+      if (!jenisBaru.has(s.kode) || s.freq !== 2) return;
+      let bd = Infinity, ph = null;
+      stores.forEach(t => { if (t === s || t.freq !== 2 || jenisBaru.has(t.kode) || t.sales !== s.sales || t.day !== s.day) return; const d = Math.hypot(s.x - t.x, s.y - t.y); if (d < bd) { bd = d; ph = t.phase; } });
+      if (ph == null) { const n0 = stores.filter(t => t.sales === s.sales && t.day === s.day && t.freq === 2 && t.phase === 0).length, n1 = stores.filter(t => t.sales === s.sales && t.day === s.day && t.freq === 2 && t.phase === 1).length; ph = n0 <= n1 ? 0 : 1; }
+      s.phase = ph;
+    });
+    if (lvl !== 'ringan') {
+      const tolS = opt.tolS != null ? opt.tolS : lvl === 'penuh' ? 0.05 : 0.2, tolD = opt.tolD != null ? opt.tolD : 0.08;
+      let lab = regionPartition(stores, c.nSales, p => p.wt, { init: stores.map(s => s.sales), atomize: c.atomize, gapAware: c.gapAware, kecBlocks: false, tol: tolS, lockOf: p => p.locked });
+      const lost = (init, l, k) => { for (let i = 0; i < k; i++) if (init.includes(i) && !l.includes(i)) return true; return false; };
+      if (lost(stores.map(s => s.sales), lab, c.nSales)) lab = stores.map(s => s.sales); // jangan sampai ada salesman tanpa toko
+      stores.forEach((s, i) => { if (s.sales !== lab[i]) { s.sales = lab[i]; s._why = 'rapikan batas wilayah'; } });
+      for (let k = 0; k < c.nSales; k++) {
+        const mine = stores.filter(s => s.sales === k); if (!mine.length) continue;
+        // toko yang baru masuk wilayah ini ikut hari toko lama terdekat
+        const old = mine.filter(s => orig.get(s.kode).sales === k);
+        mine.forEach(s => { if (orig.get(s.kode).sales === k || !old.length) return; let bd = Infinity, bdy = s.day; old.forEach(t => { const d = Math.hypot(s.x - t.x, s.y - t.y); if (d < bd) { bd = d; bdy = t.day; } }); s.day = bdy; });
+        let labD = regionPartition(mine, c.days, p => p.wt, { init: mine.map(s => s.day), atomize: c.atomize, gapAware: false, kecBlocks: false, tol: tolD, lockOf: p => p.locked });
+        if (lost(mine.map(s => s.day), labD, c.days)) labD = mine.map(s => s.day); // jangan sampai ada hari kosong
+        // hari yang dulu dipakai salesman ini tapi sekarang kosong: belah hari terberat jadi dua
+        const usedBefore = new Set(stores.filter(s => orig.get(s.kode).sales === k).map(s => orig.get(s.kode).day));
+        for (let guard = 0; guard < c.days; guard++) {
+          const cnt = new Array(c.days).fill(0), load = new Array(c.days).fill(0); mine.forEach((s, i) => { cnt[labD[i]]++; load[labD[i]] += s.wt; });
+          const empty = [...usedBefore].find(d => d < c.days && !cnt[d]); if (empty == null) break;
+          let big = 0; load.forEach((v, d) => { if (v > load[big]) big = d; }); if (cnt[big] < 2) break;
+          const idx = []; mine.forEach((s, i) => { if (labD[i] === big) idx.push(i); });
+          const half = balancedCluster(idx.map(i => mine[i]), 2, g => g.reduce((a, p) => a + p.wt, 0), 0.1);
+          idx.forEach((i, j) => { if (half[j] === 1 && !mine[i].locked) labD[i] = empty; });
+        }
+        mine.forEach((s, i) => { if (s.day !== labD[i]) { s.day = labD[i]; if (!s._why) s._why = 'rapikan area hari'; } });
+      }
+    }
+    c._keepDays = true; c._keepWeeks = true; c._noJam = lvl !== 'penuh';
+    const res = buildRest(stores, c, opt.onProgress || (() => {}), null, true, true);
+    res.changes = [];
+    stores.forEach(s => {
+      const o = orig.get(s.kode); if (!o) return;
+      const jenisChanged = o.freq !== s.freq;
+      if (o.sales === s.sales && o.day === s.day && (o.phase === s.phase || (o.freq >= 4 && s.freq >= 4)) && !jenisChanged) return;
+      const why = jenisChanged ? 'jenis dari EC' + (s._why ? ' + ' + s._why : '') : (s._why || 'perbaikan jalur');
+      res.changes.push({ kode: s.kode, nama: s.nama, from: o, to: { sales: s.sales, day: s.day, phase: s.phase, freq: s.freq }, why, ec: s.ec });
+    });
+    return res;
   }
 
   function buildOnce(stores, cfg, onProgress, mult, dmult, useChain, doMin) {
@@ -1590,7 +1684,7 @@ tr.click { cursor: pointer; } tr.click td:first-child { white-space: nowrap; } t
 
     // 2) hari dalam wilayah tiap salesman (1 hari = 1 area)
     prog('Menyusun hari kerja');
-    for (let k = 0; k < S; k++) {
+    for (let k = 0; k < S && !c._keepDays; k++) {
       const mine = stores.filter(s => s.sales === k);
       if (!mine.length) continue;
       const dayLoad = (g, C) => {
@@ -1608,7 +1702,7 @@ tr.click { cursor: pointer; } tr.click td:first-child { white-space: nowrap; } t
       mine.forEach((s, i) => s.day = lab[i]);
     }
     // 3) sebar C dan NT ke pekan agar stabil
-    assignWeeks(stores, c);
+    if (!c._keepWeeks) assignWeeks(stores, c);
 
     // 4) rute & perbaikan jalur yang lewat batas
     prog('Mengurutkan rute dan memperbaiki jalur');
@@ -1623,6 +1717,8 @@ tr.click { cursor: pointer; } tr.click td:first-child { white-space: nowrap; } t
 
     const overflow = r => Math.max(0, r.sc.lastCheckin - c.lastCheckin) + Math.max(0, r.order.length - r.cap) * 30;
     const moved = new Map();
+    let stage = 'jalur lewat batas / kapasitas';
+    stores.forEach(st => { if (st.locked) moved.set(st.kode, 99); });
     const tryInsert = (r, st) => {
       // sisip termurah ke rute berurutan, lalu jadwal
       let best = null;
@@ -1658,6 +1754,7 @@ tr.click { cursor: pointer; } tr.click td:first-child { white-space: nowrap; } t
       oldWeeks.forEach(w => rebuild(os, w, od));
       weeksOf(st).forEach(w => rebuild(st.sales, w, st.day));
       moved.set(st.kode, (moved.get(st.kode) || 0) + 1);
+      st._why = stage;
     };
     const evalOption = (st, o) => {
       const tmp = Object.assign({}, st, { sales: o.s, day: o.d, phase: o.phase != null ? o.phase : st.phase, ntWeek: o.ntWeek != null ? o.ntWeek : st.ntWeek });
@@ -1739,7 +1836,8 @@ tr.click { cursor: pointer; } tr.click td:first-child { white-space: nowrap; } t
     // 5) pemerataan jam kerja antar salesman (toko perbatasan)
     prog('Meratakan beban salesman');
     const avgJam = s => { let t = 0, n = 0; for (let w = 0; w < W; w++) for (let d = 0; d < Dn; d++) { const r = R.get(key(s, w, d)); t += r.sc.jam; n++; } return t / n; };
-    for (let it = 0; it < 80; it++) {
+    stage = 'pemerataan jam kerja';
+    for (let it = 0; it < (c._noJam ? 0 : 80); it++) {
       const J = Array.from({ length: S }, (_, s) => avgJam(s));
       let hi = 0, lo = 0; J.forEach((v, s) => { if (v > J[hi]) hi = s; if (v < J[lo]) lo = s; });
       if (J[hi] - J[lo] < 0.25) break;
@@ -1768,7 +1866,8 @@ tr.click { cursor: pointer; } tr.click td:first-child { white-space: nowrap; } t
     prog('Mengisi jalur yang terlalu sedikit');
     const dbg = tag => { if (!globalThis.JKS_DEBUG2) return; let l = 0, o = 0, u = 0; R.forEach(r => { if (r.sc.lastCheckin > c.lastCheckin) l++; if (r.order.length > r.cap) o++; if (r.order.length && r.order.length < r.min) u++; }); console.log(tag, 'lewat', l, 'over', o, 'under', u); };
     dbg('sebelum min');
-    if (doMin && !globalThis.NO_TIDY) tidyStrays([false, false]);
+    if (doMin && !globalThis.NO_TIDY) tidyStrays(c._keepDays ? [false, true] : [false, false]);
+    stage = 'minimal toko per hari';
     const deficit = r => r.order.length ? Math.max(0, r.min - r.order.length) : 0;
     const stuckU = new Set();
     for (let it = 0; doMin && it < 1500; it++) {
@@ -1809,17 +1908,18 @@ tr.click { cursor: pointer; } tr.click td:first-child { white-space: nowrap; } t
 
     // toko satu titik yang terpisah oleh perbaikan jalur: satukan lagi bila tidak melanggar batas
     if (doMin && c.atomize) {
+      stage = 'toko satu titik';
       const byAtom = new Map(); stores.forEach(x => { if (!byAtom.has(x.atom)) byAtom.set(x.atom, []); byAtom.get(x.atom).push(x); });
       byAtom.forEach(mem => {
         if (mem.length < 2) return;
         const cnt = {}; mem.forEach(x => { const k = x.sales + '|' + x.day; cnt[k] = (cnt[k] || 0) + 1; });
         const ks = Object.keys(cnt); if (ks.length < 2) return;
         const [ts, td] = ks.sort((a, b) => cnt[b] - cnt[a])[0].split('|').map(Number);
-        mem.forEach(x => { if (x.sales === ts && x.day === td) return; const o = { s: ts, d: td, pen: 0 }; if (evalOption(x, o) != null) applyMove(x, o); });
+        mem.forEach(x => { if (x.sales === ts && x.day === td) return; if ((moved.get(x.kode) || 0) >= 99) return; const o = { s: ts, d: td, pen: 0 }; if (evalOption(x, o) != null) applyMove(x, o); });
       });
     }
     dbg('sesudah min');
-    if (doMin && !globalThis.NO_TIDY) tidyStrays([false, true]);
+    if (doMin && !globalThis.NO_TIDY) tidyStrays(c._keepDays ? [true, true] : [false, true]);
     // 7) rapikan toko "nyasar": toko yang tetangga terdekatnya hampir semua milik salesman/hari lain
     //    dipindah ke sana, selama jalur tujuan tetap di bawah 16.00 dan kapasitas
     function tidyStrays(prot) {
@@ -1828,8 +1928,10 @@ tr.click { cursor: pointer; } tr.click td:first-child { white-space: nowrap; } t
       const unitOf = st => (c.atomize ? stores.filter(x => x.atom === st.atom && x.sales === st.sales && x.day === st.day) : [st]);
       const optsTo = (st, s, d) => st.freq === 2 ? [{ s, d, phase: st.phase, pen: 0 }, { s, d, phase: 1 - st.phase, pen: 0 }] : [{ s, d, pen: 0 }];
       let level = 'sales';
+      stage = 'toko nyasar';
       const tryUnit = (unit, s, d) => {
         const log = [];
+        if (unit.some(x => (moved.get(x.kode) || 0) >= 99)) return false;
         for (const x of unit) {
           if (prot[level === 'sales' ? 0 : 1] && weeksOf(x).some(w => { const sr = R.get(key(x.sales, w, x.day)); return sr.order.length >= sr.min && sr.order.length - 1 < sr.min; })) { for (let i = log.length - 1; i >= 0; i--) applyMove(log[i][0], log[i][1]); return false; }
           let bo = null, bc = Infinity;
@@ -1857,7 +1959,7 @@ tr.click { cursor: pointer; } tr.click td:first-child { white-space: nowrap; } t
         }
       }
     }
-    renumberDays(stores, R, c, key, rebuild);
+    if (!c._keepDays) renumberDays(stores, R, c, key, rebuild);
 
     return assemble(stores, R, c, key);
   }
@@ -2084,7 +2186,7 @@ tr.click { cursor: pointer; } tr.click td:first-child { white-space: nowrap; } t
     return { cfg: c, routes, rows, summary, warnings, capTable, asis, stores, need };
   }
 
-  root.JKS = { _rp: regionPartition, _prep: prepare, _atoms: computeAtoms, KELAS, KELAS_LABEL, kelasLabel, fromAssignment, parseJenis, freqFor, jenisOf, JENIS, DEFAULTS, DAY_NAMES, validate, build, schedule, orderRoute, fmt, normKelas, num, makeCtx };
+  root.JKS = { improve, _rp: regionPartition, _prep: prepare, _atoms: computeAtoms, KELAS, KELAS_LABEL, kelasLabel, fromAssignment, parseJenis, freqFor, jenisOf, JENIS, DEFAULTS, DAY_NAMES, validate, build, schedule, orderRoute, fmt, normKelas, num, makeCtx };
 })(typeof window !== 'undefined' ? window : globalThis);
 
 </script>
@@ -2289,6 +2391,7 @@ const FIELDS = [
   { k: 'kec', label: 'Kecamatan', req: false, alias: ['kecamatan', 'kec', 'district', 'wilayah', 'area'] },
   { k: 'sales', label: 'Salesman saat ini', req: false, alias: ['salesman', 'salesmansaatini', 'namasalesman', 'sales', 'namasales', 'salesmanasis', 'salesmanlama'] },
   { k: 'hari', label: 'Hari kunjungan', req: false, edit: true, alias: ['hari', 'harikunjungan', 'rayon', 'day', 'harivisit', 'hk'] },
+  { k: 'kunci', label: 'Kunci (jangan dipindah)', req: false, edit: true, alias: ['kunci', 'lock', 'locked', 'tetap', 'jangandipindah', 'kuncitoko'] },
   { k: 'jenis', label: 'Jenis kunjungan', req: false, edit: true, alias: ['jeniskunjungan', 'cycle', 'siklus', 'jenis', 'frekuensi', 'kunjungan', 'pekankunjungan', 'tipekunjungan'] },
   { k: 'koord', label: 'Koordinat / link peta', req: false, alias: ['koordinat', 'longlat', 'latlong', 'latlng', 'titik', 'lokasi', 'peta', 'linkpeta', 'maps', 'googlemaps', 'linkmaps', 'bukatitik', 'link'] }
 ];
@@ -2534,7 +2637,7 @@ $('btn-run').onclick = () => {
       state.valid.stores.forEach(s => { delete s.fixFreq; delete s.edited; });
       state.res = JKS.build(state.valid.stores, cfg);
       state.res.issues = state.valid.issues;
-      state.edits = []; state.mode = 'susun';
+      state.edits = []; state.mode = 'susun'; state.fix = null; $('p-fixres').hidden = true;
       renderAll();
     } catch (e) { console.error(e); toast('Gagal menyusun: ' + e.message); }
     $('busy').hidden = true;
@@ -2791,6 +2894,7 @@ function recompute() {
   const R = state.res, issues = R.issues;
   state.res = JKS.fromAssignment(R.stores, R.cfg);
   state.res.issues = issues;
+  if (state.fix) { if (state.fix.before === R) state.fix.before = state.res; else state.fix.after = state.res; }
 }
 
 // ---------- membuka file hasil ekspor ----------
@@ -2823,22 +2927,25 @@ function openExport(rows) {
   state.names = names.slice(); state.edits = []; state.mode = 'buka';
   const cfg = readForm(); placeDepot();
   state.res = JKS.fromAssignment(stores, cfg); state.res.issues = bad;
-  state.valid = { stores, issues: bad };
+  state.valid = { stores, issues: bad }; state.fix = null; $('p-fixres').hidden = true;
   renderAll();
   toast('JKS dibuka: ' + stores.length + ' toko, ' + names.length + ' salesman. Silakan edit.');
 }
 
 // ---------- mode edit: JKS yang sudah disusun sendiri ----------
-function setMode(edit) {
-  state.editMode = edit;
-  document.body.classList.toggle('m-edit', edit);
-  $('mode-build').setAttribute('aria-pressed', String(!edit)); $('mode-edit').setAttribute('aria-pressed', String(edit));
+function setMode(edit, fix) {
+  const wasEdit = !!state.editMode;
+  state.editMode = edit; state.fixMode = !!fix;
+  document.body.classList.toggle('m-edit', edit); document.body.classList.toggle('m-fix', !!fix);
+  $('mode-build').setAttribute('aria-pressed', String(!edit)); $('mode-edit').setAttribute('aria-pressed', String(edit && !fix)); $('mode-fix').setAttribute('aria-pressed', String(!!fix));
+  if (wasEdit && edit) { if (state.editPrep) { $('btn-show').disabled = !state.editPrep.stores.length; $('btn-fix').disabled = !state.editPrep.stores.length; } return; }
   $('data-title').textContent = edit ? 'Data JKS' : 'Data toko';
   if (state.wb && !state.sample) { renderMapping(); detectExport(); revalidate(); }
-  else { state.wb = null; state.data = []; $('mapping').hidden = true; $('fileinfo').innerHTML = ''; $('checks').innerHTML = ''; $('btn-run').disabled = true; $('btn-show').disabled = true; }
+  else { state.wb = null; state.data = []; $('mapping').hidden = true; $('fileinfo').innerHTML = ''; $('checks').innerHTML = ''; $('btn-run').disabled = true; $('btn-show').disabled = true; $('btn-fix').disabled = true; }
 }
 $('mode-build').onclick = () => { if (state.editMode) setMode(false); };
-$('mode-edit').onclick = () => { if (!state.editMode) setMode(true); };
+$('mode-edit').onclick = () => { if (!state.editMode || state.fixMode) setMode(true, false); };
+$('mode-fix').onclick = () => { if (!state.fixMode) setMode(true, true); };
 function editTemplate() {
   const rows = [
     ['Kode Toko', 'Nama Toko', 'Latitude', 'Longitude', 'Salesman', 'Hari', 'Jenis Kunjungan', 'Kelas', 'Omset', 'Rata-rata EC 3 Bulan', 'Kecamatan'],
@@ -2889,7 +2996,7 @@ function fixCoordNear(v, ref) {
 function editRows() {
   const get = (r, k) => state.map[k] == null ? undefined : r[state.map[k]];
   const dl = +$('s-depotLat').value, dg = +$('s-depotLng').value;
-  return state.data.map(x => ({ _row: x.row, kode: get(x.r, 'kode'), nama: get(x.r, 'nama'), lat: fixCoordNear(get(x.r, 'lat'), dl), lng: fixCoordNear(get(x.r, 'lng'), dg), omset: get(x.r, 'omset'), kelas: get(x.r, 'kelas'), kec: get(x.r, 'kec'), sales: get(x.r, 'sales'), koord: get(x.r, 'koord'), ec: get(x.r, 'ec'), hari: get(x.r, 'hari'), jenis: get(x.r, 'jenis') }));
+  return state.data.map(x => ({ _row: x.row, kode: get(x.r, 'kode'), nama: get(x.r, 'nama'), lat: fixCoordNear(get(x.r, 'lat'), dl), lng: fixCoordNear(get(x.r, 'lng'), dg), omset: get(x.r, 'omset'), kelas: get(x.r, 'kelas'), kec: get(x.r, 'kec'), sales: get(x.r, 'sales'), koord: get(x.r, 'koord'), ec: get(x.r, 'ec'), hari: get(x.r, 'hari'), jenis: get(x.r, 'jenis'), kunci: get(x.r, 'kunci') }));
 }
 const cleanSales = v => String(v == null ? '' : v).replace(/^[A-Z]{2,4}\s*-\s*/, '').trim();
 function buildEditStores() {
@@ -2908,7 +3015,7 @@ function buildEditStores() {
     if (d > 5) return add('Hari Minggu tidak didukung');
     if (!p) return add('Jenis kunjungan "' + (r.jenis == null ? '' : r.jenis) + '" tidak terbaca (pakai M1, M2C13, atau M2C24)');
     if (!names.includes(sn)) names.push(sn);
-    Object.assign(st, { sales: names.indexOf(sn), day: d, fixFreq: p.freq, phase: p.phase, ntWeek: 0 });
+    Object.assign(st, { sales: names.indexOf(sn), day: d, fixFreq: p.freq, phase: p.phase, ntWeek: 0, locked: /^(ya|y|yes|1|x|v|true|kunci|✓)$/i.test(String(r.kunci == null ? '' : r.kunci).trim()) });
     stores.push(st);
   });
   // "M2" tanpa pekan: bagi bergantian ke C13/C24 per salesman-hari
@@ -2917,12 +3024,27 @@ function buildEditStores() {
   stores.forEach(st => { if (st.fixFreq !== 2 || st.phase != null) { if (st.phase == null) st.phase = 0; return; } const k = st.sales + '|' + st.day; st.phase = (cnt[k] || 0) > 0 ? 0 : 1; cnt[k] = (cnt[k] || 0) + (st.phase ? 1 : -1); autoPhase++; });
   return { stores, issues, names, autoPhase, merged: v.merged };
 }
+function fxEcHint() {
+  const E = state.editPrep, hasEc = state.map.ec != null;
+  $('fx-ec').disabled = !hasEc; if (!hasEc) $('fx-ec').checked = false;
+  $('fx-ec-f').hidden = !$('fx-ec').checked;
+  if (!hasEc) { $('fx-ec-hint').textContent = 'File ini tidak punya kolom rata-rata EC 3 bulan, jadi jenis kunjungan mengikuti file.'; return; }
+  if (!E) { $('fx-ec-hint').textContent = ''; return; }
+  const thr = parseFloat($('fx-ecM1').value);
+  const withEc = E.stores.filter(s => isFinite(s.ec)), noEc = E.stores.length - withEc.length;
+  if (!$('fx-ec').checked || !isFinite(thr)) { $('fx-ec-hint').textContent = withEc.length + ' toko punya angka EC. Centang untuk menentukan ulang M1/M2 dari EC.'; return; }
+  let m1 = 0, up = 0, down = 0, kunj = 0;
+  E.stores.forEach(s => { const f = isFinite(s.ec) ? (s.ec >= thr ? 4 : 2) : s.fixFreq; if (f >= 4) m1++; if (f > s.fixFreq) up++; if (f < s.fixFreq) down++; kunj += f; });
+  const kunjFile = E.stores.reduce((a, s) => a + s.fixFreq, 0);
+  $('fx-ec-hint').innerHTML = `Dengan EC ≥ ${esc(nf1(thr))}: <b>${m1}</b> toko M1, ${E.stores.length - m1} M2. ${up} toko naik ke M1, ${down} turun ke M2. Kunjungan per 4 pekan ${nf0(kunjFile)} → <b>${nf0(kunj)}</b>.${noEc ? ' ' + noEc + ' toko tanpa EC tetap memakai jenis dari file.' : ''}`;
+}
+$('fx-ec').onchange = fxEcHint; $('fx-ecM1').oninput = fxEcHint;
 function revalidateEdit() {
   const missing = FIELDS.filter(f => EDIT_REQ.includes(f.k) && state.map[f.k] == null && !(['lat', 'lng'].includes(f.k) && state.map.koord != null));
   if (missing.length) {
     state.editPrep = null;
     $('checks').innerHTML = `<div class="checks"><div class="check bad"><span>Kolom belum dipilih: ${missing.map(f => f.label).join(', ')}</span><b>!</b></div></div>`;
-    $('btn-show').disabled = true; return;
+    $('btn-show').disabled = true; $('btn-fix').disabled = true; return;
   }
   const E = buildEditStores(); state.editPrep = E;
   const m1 = E.stores.filter(s => s.fixFreq >= 4).length;
@@ -2933,6 +3055,7 @@ function revalidateEdit() {
     <div class="check"><span>Salesman</span><b>${E.names.length}</b></div>
     <div class="check"><span>Hari kerja dipakai</span><b>${maxDay + 1}</b></div>
     <div class="check"><span>M1 · M2</span><b>${m1} · ${E.stores.length - m1}</b></div>
+    ${E.stores.some(s => s.locked) ? `<div class="check"><span>Toko dikunci (tidak dipindah)</span><b>${E.stores.filter(s => s.locked).length}</b></div>` : ''}
     ${E.autoPhase ? `<div class="check warn"><span>M2 tanpa pekan, dibagi otomatis ke C13/C24</span><b>${E.autoPhase}</b></div>` : ''}
     ${E.merged ? `<div class="check"><span>Baris berulang (kode &amp; titik sama) digabung</span><b>${E.merged}</b></div>` : ''}
     <div class="check ${out ? 'bad' : 'ok'}"><span>Tidak bisa ditampilkan</span><b>${out}</b></div>
@@ -2941,7 +3064,8 @@ function revalidateEdit() {
     ${E.issues.length ? `<details class="fold"><summary>Lihat ${E.issues.length} masalah data</summary>
       <div class="tbl-wrap"><table><tr><th>Baris</th><th>Kode</th><th>Nama</th><th>Masalah</th></tr>
       ${E.issues.slice(0, 300).map(i => `<tr><td class="n">${esc(i.baris)}</td><td>${esc(i.kode)}</td><td>${esc(i.nama)}</td><td><span class="pill ${i.status === 'Dikeluarkan' ? 'bad' : 'warn'}">${i.status}</span> ${esc(i.masalah)}</td></tr>`).join('')}</table></div></details>` : ''}`;
-  $('btn-show').disabled = !E.stores.length;
+  $('btn-show').disabled = !E.stores.length; $('btn-fix').disabled = !E.stores.length;
+  fxEcHint();
 }
 $('btn-show').onclick = () => {
   const E = state.editPrep || buildEditStores(); if (!E.stores.length) return;
@@ -2952,12 +3076,85 @@ $('btn-show').onclick = () => {
   const cfg = readForm(); cfg.nSales = E.names.length; placeDepot();
   const stores = E.stores.map(s => Object.assign({}, s));
   state.res = JKS.fromAssignment(stores, cfg); state.res.issues = E.issues;
-  state.valid = { stores, issues: E.issues };
+  state.valid = { stores, issues: E.issues }; state.fix = null; $('p-fixres').hidden = true;
   renderAll();
   const R = state.res, act = R.routes.filter(r => r.order.length);
   const lewat = act.filter(r => r.sc.lastCheckin > cfg.lastCheckin).length;
   toast('JKS tampil: ' + stores.length + ' toko, ' + E.names.length + ' salesman' + (lewat ? ', ' + lewat + ' jalur lewat ' + fmt(cfg.lastCheckin) : '') + '. Silakan edit.');
 };
+
+// ---------- perbaiki otomatis ----------
+function busy(on, msg) { $('busy').hidden = !on; if (msg) $('busy-msg').textContent = msg; }
+function jksMetrics(R) {
+  const c = R.cfg, act = R.routes.filter(r => r.order.length), P = R.stores;
+  let stray = 0;
+  P.forEach(p => { const nb = []; P.forEach(q => { if (q === p) return; const d = Math.hypot(p.x - q.x, p.y - q.y); if (nb.length < 5 || d < nb[4][0]) { nb.push([d, q]); nb.sort((a, b) => a[0] - b[0]); if (nb.length > 5) nb.pop(); } }); if (nb.length && nb[0][0] <= 3 && nb.filter(([, q]) => q.sales !== p.sales).length >= 4) stray++; });
+  const kec = {}; P.forEach(x => { if (!x.kec) return; (kec[x.kec] = kec[x.kec] || new Set()).add(x.sales); });
+  const J = R.summary.map(s => s.rataJam);
+  return { lewat: act.filter(r => r.sc.lastCheckin > c.lastCheckin).length, cap: act.filter(r => r.order.length > r.cap).length, kurang: act.filter(r => r.order.length < r.min).length, stray, kec: Object.keys(kec).length ? Object.values(kec).filter(s => s.size > 1).length : null, km: Math.round(act.reduce((a, r) => a + r.sc.km, 0)), last: Math.max(...act.map(r => r.sc.lastCheckin)), spread: Math.max(...J) - Math.min(...J), kunj: R.rows.length };
+}
+const jenisTxt = (freq, phase) => freq >= 4 ? 'M1' : phase === 1 ? 'M2C24' : 'M2C13';
+$('btn-fix').onclick = () => {
+  const E = state.editPrep || buildEditStores(); if (!E.stores.length) return;
+  const level = (document.querySelector('input[name="fixlvl"]:checked') || {}).value || 'sedang';
+  const maxDay = Math.max(...E.stores.map(s => s.day));
+  if (maxDay >= 5) $('s-days').value = '6';
+  $('s-nSales').value = E.names.length;
+  state.names = E.names.slice(); state.edits = []; state.mode = 'perbaiki';
+  const cfg = readForm(); cfg.nSales = E.names.length; placeDepot();
+  busy(true, 'Memperbaiki JKS…');
+  setTimeout(() => {
+    try {
+      const before = JKS.fromAssignment(E.stores.map(s => Object.assign({}, s)), cfg);
+      const ecM1 = $('fx-ec').checked ? parseFloat($('fx-ecM1').value) : null;
+      if ($('fx-ec').checked && !(ecM1 > 0)) throw new Error('isi EC minimal untuk M1');
+      const after = JKS.improve(E.stores.map(s => Object.assign({}, s)), cfg, { level, ecM1 });
+      after.issues = E.issues; before.issues = E.issues;
+      state.res = after; state.valid = { stores: after.stores, issues: E.issues };
+      state.fix = { level, ecM1, before, after, mb: jksMetrics(before), ma: jksMetrics(after), changes: after.changes };
+      renderAll(); renderFix();
+      $('p-fixres').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      toast(after.changes.length + ' toko diubah. Cek daftar perubahan, lalu edit manual kalau perlu.');
+    } catch (err) { console.error(err); toast('Gagal memperbaiki: ' + err.message); }
+    busy(false);
+  }, 30);
+};
+function renderFix() {
+  const F = state.fix, el = $('p-fixres'); if (!F) { el.hidden = true; return; }
+  const b = F.mb, a = F.ma, LV = { ringan: 'Ringan', sedang: 'Sedang', penuh: 'Penuh' };
+  const row = (lab, x, y, lowGood, f) => { f = f || (v => nf0(v)); const better = lowGood ? y < x : y > x, worse = lowGood ? y > x : y < x; return `<tr><td>${lab}</td><td class="n">${f(x)}</td><td class="n"><b class="${better ? 'up' : worse ? 'down' : ''}">${f(y)}</b></td></tr>`; };
+  const pindahS = F.changes.filter(x => x.from.sales !== x.to.sales).length, pindahD = F.changes.filter(x => x.from.sales === x.to.sales && x.from.day !== x.to.day).length, pindahJ = F.changes.filter(x => x.from.freq !== x.to.freq).length, pindahW = F.changes.filter(x => x.from.sales === x.to.sales && x.from.day === x.to.day && x.from.freq === x.to.freq).length;
+  const why = {}; F.changes.forEach(x => { const k = x.why.split(' + ')[0]; why[k] = (why[k] || 0) + 1; });
+  const where = (o) => `${esc(salesName(o.sales))} · ${DAYS[o.day]} · ${jenisTxt(o.freq, o.phase)}`;
+  el.hidden = false;
+  el.innerHTML = `<h2>Hasil perbaikan otomatis <span class="pill ok" style="font-family:var(--f-body)">Tingkat ${LV[F.level]}</span>${F.ecM1 != null ? `<span class="pill" style="font-family:var(--f-body)">M1 jika EC ≥ ${esc(nf1(F.ecM1))}</span>` : ''}</h2>
+    <div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.3fr);gap:20px;align-items:start" class="fixgrid">
+      <div class="tbl-wrap"><table class="ba"><tr><th>Ukuran</th><th class="n">JKS asli</th><th class="n">Sesudah</th></tr>
+        ${row('Jalur lewat ' + fmt(state.res.cfg.lastCheckin), b.lewat, a.lewat, true)}
+        ${row('Check-in terakhir paling malam', b.last, a.last, true, fmt)}
+        ${row('Jalur melebihi kapasitas', b.cap, a.cap, true)}
+        ${row('Jalur di bawah minimal', b.kurang, a.kurang, true)}
+        ${row('Toko nyasar ke wilayah salesman lain', b.stray, a.stray, true)}
+        ${b.kec != null ? row('Kecamatan dipegang >1 salesman', b.kec, a.kec, true) : ''}
+        ${row('Selisih jam kerja antar salesman', b.spread, a.spread, true, v => nf1(v) + ' jam')}
+        ${row('Km per 4 pekan', b.km, a.km, true)}
+        ${F.ecM1 != null ? `<tr><td>M1 · M2</td><td class="n">${F.before.stores.filter(s => s.freq >= 4).length} · ${F.before.stores.filter(s => s.freq < 4).length}</td><td class="n"><b>${state.fix.after.stores.filter(s => s.freq >= 4).length} · ${state.fix.after.stores.filter(s => s.freq < 4).length}</b></td></tr><tr><td>Kunjungan per 4 pekan</td><td class="n">${nf0(b.kunj)}</td><td class="n"><b>${nf0(a.kunj)}</b></td></tr>` : ''}
+      </table></div>
+      <div>
+        <p style="margin:0"><b>${F.changes.length}</b> dari ${state.res.stores.length} toko berubah: ${pindahS} pindah salesman, ${pindahD} pindah hari, ${pindahW} hanya geser pekan C13/C24${pindahJ ? `; ${pindahJ} ganti jenis kunjungan (M1/M2)` : ''}.</p>
+        ${a.lewat || a.cap ? `<p class="hint" style="margin-top:6px;color:var(--bad)">Masih ada ${a.lewat + a.cap} jalur bermasalah. Biasanya berisi toko yang dikunci, atau tidak ada jalur tetangga yang masih muat. Rapikan manual lewat matriks atau edit per toko.</p>` : ''}
+        <div class="chg-why">${Object.entries(why).sort((x, y) => y[1] - x[1]).map(([k, v]) => `<span class="pill">${esc(k)} · ${v}</span>`).join('')}</div>
+        <div class="row"><button class="btn" type="button" id="btn-fix-orig">Lihat JKS asli</button><button class="btn" type="button" id="btn-fix-again">Kembali ke hasil perbaikan</button><span class="hint">Edit manual tetap bisa dilakukan di bawah. Ekspor menyertakan sheet Perubahan Otomatis.</span></div>
+      </div>
+    </div>
+    <details class="fold" ${F.changes.length <= 40 ? 'open' : ''}><summary>Daftar ${F.changes.length} toko yang berubah</summary>
+      <div class="tbl-wrap" style="max-height:420px"><table><tr><th>Kode</th><th>Nama</th><th>Sebelum</th><th>Sesudah</th><th>Alasan</th></tr>
+      ${F.changes.slice().sort((x, y) => x.from.sales - y.from.sales || x.from.day - y.from.day).map(x => `<tr class="click" data-k="${esc(x.kode)}"><td>${esc(x.kode)}</td><td>${esc(x.nama)}</td><td>${where(x.from)}</td><td>${where(x.to)}</td><td>${esc(x.why)}</td></tr>`).join('')}</table></div></details>`;
+  el.querySelectorAll('tr.click').forEach(tr => tr.onclick = () => { if (state.res === F.before) return; openEditor(tr.dataset.k); });
+  $('btn-fix-orig').onclick = () => { state.res = F.before; renderAll(); $('btn-fix-orig').disabled = true; $('btn-fix-again').disabled = false; toast('Menampilkan JKS asli (sebelum perbaikan)'); };
+  $('btn-fix-again').disabled = true;
+  $('btn-fix-again').onclick = () => { if (F.after) state.res = F.after; renderAll(); $('btn-fix-orig').disabled = false; $('btn-fix-again').disabled = true; toast('Menampilkan hasil perbaikan'); };
+}
 
 // ---------- ekspor ----------
 $('btn-export').onclick = () => {
@@ -2998,6 +3195,12 @@ $('btn-export').onclick = () => {
   if (bad.length === 1) bad.push(['', '', '', 'Aman', 'Tidak ada toko bermasalah']);
   const ws4 = XLSX.utils.aoa_to_sheet(bad); ws4['!cols'] = [10, 11, 28, 12, 60].map(w => ({ wch: w }));
   XLSX.utils.book_append_sheet(wb, ws4, 'Toko Bermasalah');
+  if (state.fix && state.res !== state.fix.before) {
+    const pf = [['Kode', 'Nama', 'Salesman sebelum', 'Hari sebelum', 'Jenis sebelum', 'Salesman sesudah', 'Hari sesudah', 'Jenis sesudah', 'Alasan']];
+    state.fix.changes.forEach(x => pf.push([x.kode, x.nama, salesName(x.from.sales), DAYS[x.from.day], jenisTxt(x.from.freq, x.from.phase), salesName(x.to.sales), DAYS[x.to.day], jenisTxt(x.to.freq, x.to.phase), x.why]));
+    const ws7 = XLSX.utils.aoa_to_sheet(pf); ws7['!cols'] = [11, 28, 16, 9, 9, 16, 9, 9, 26].map(w => ({ wch: w }));
+    XLSX.utils.book_append_sheet(wb, ws7, 'Perubahan Otomatis');
+  }
   if (state.edits.length) {
     const ed = [['No', 'Kode', 'Nama', 'Sebelum', 'Sesudah', 'Waktu edit']];
     state.edits.forEach((e, i) => ed.push([i + 1, e.kode, e.nama, e.dari, e.ke, e.waktu]));
