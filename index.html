@@ -2,11 +2,10 @@
 <html lang="id">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="description" content="Penyusun JKS Frozen RDI: susun jalur kunjungan salesman dari file Excel toko. Semua data diproses di browser.">
-<style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,-apple-system,Segoe UI,sans-serif}img{max-width:100%}</style>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 </head>
 <body>
+
 <title>Penyusun JKS Frozen RDI</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -733,10 +732,24 @@ h1 small { display: block; font-family: var(--f-mono); font-weight: 400; font-si
 .btn.big { width: 100%; padding: 12px; font-size: 15px; font-family: var(--f-display); font-stretch: 90%; letter-spacing: .01em; }
 .btn:disabled { opacity: .45; cursor: not-allowed; }
 .btn.on { background: var(--ink); color: var(--surface); border-color: var(--ink); }
-.modes { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 4px; padding: 4px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); }
-.modes button { font: inherit; font-weight: 600; font-size: 13px; padding: 9px 8px; border: 0; border-radius: 6px; background: transparent; color: var(--muted); cursor: pointer; line-height: 1.25; }
-.modes button[aria-pressed="true"] { background: var(--ink); color: var(--surface); }
-.modes button small { display: block; font-weight: 400; font-size: 11.5px; opacity: .8; }
+.start { margin-bottom: 20px; }
+.start-q { font-family: var(--f-display); font-stretch: 88%; font-size: 20px; font-weight: 700; margin: 0 0 10px; }
+.modes { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.modes button { font: inherit; text-align: left; position: relative; display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 4px 14px; align-items: start; padding: 18px 18px 18px 16px; border: 2px solid var(--line); border-radius: 12px; background: var(--surface); color: var(--ink); cursor: pointer; transition: border-color .15s, background .15s; }
+.modes button svg { grid-row: span 2; color: var(--muted); margin-top: 2px; }
+.modes button b { font-family: var(--f-display); font-stretch: 90%; font-size: 19px; line-height: 1.2; }
+.modes button span { font-size: 13.5px; color: var(--muted); line-height: 1.45; }
+.modes button em { position: absolute; top: 10px; right: 12px; font-style: normal; font-size: 11px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: var(--accent-ink); background: var(--accent); padding: 2px 8px; border-radius: 99px; display: none; }
+.modes button:hover { border-color: var(--accent); }
+.modes button[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-soft); }
+.modes button[aria-pressed="true"] svg { color: var(--accent); }
+.modes button[aria-pressed="true"] em { display: inline-block; }
+@media (max-width: 860px) { .modes { grid-template-columns: minmax(0, 1fr); } .modes button { padding: 14px; } .modes button b { font-size: 17px; } }
+.ck-head { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 4px 12px; align-items: baseline; margin-top: 12px; padding: 12px 14px; border-radius: 8px; }
+.ck-head b { font-size: 16px; } .ck-head span { font-size: 13px; }
+.ck-head.ok { background: var(--ok-soft); } .ck-head.ok b { color: var(--ok); }
+.ck-head.warn { background: var(--ok-soft); } .ck-head.warn b { color: var(--ok); } .ck-head.warn span { color: var(--warn); font-weight: 600; }
+.ck-head.bad { background: var(--bad-soft); } .ck-head.bad span { color: var(--bad); font-weight: 600; }
 body.m-edit .only-build { display: none !important; }
 body:not(.m-edit) .only-edit { display: none !important; }
 body.m-fix .only-plainedit { display: none !important; }
@@ -749,7 +762,7 @@ body:not(.m-fix) .only-fix { display: none !important; }
 .lvl span { font-size: 12.5px; color: var(--muted); grid-column: 2; }
 .ba td.n b.up { color: var(--ok); } .ba td.n b.down { color: var(--bad); }
 .chg-why { display: flex; flex-wrap: wrap; gap: 6px; margin: 10px 0; }
-@media (max-width: 760px) { .fixgrid { grid-template-columns: 1fr !important; } .modes button small { display: none; } }
+@media (max-width: 760px) { .fixgrid { grid-template-columns: 1fr !important; } }
 
 .fileinfo { font-size: 13px; margin-top: 10px; padding: 8px 10px; background: var(--surface-2); border-radius: 6px; display: flex; flex-wrap: wrap; gap: 4px 10px; align-items: center; }
 .fileinfo .tag { font-family: var(--f-mono); font-size: 11px; color: var(--muted); }
@@ -860,7 +873,18 @@ tr.click { cursor: pointer; } tr.click td:first-child { white-space: nowrap; } t
 .leaflet-popup-content b { font-size: 13px; }
 
 .two { display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; }
-@media (min-width: 1500px) { .two { grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); } }
+.restop { display: flex; flex-wrap: wrap; gap: 10px 16px; align-items: center; justify-content: space-between; }
+.restop > div { display: grid; gap: 2px; min-width: 0; flex: 1 1 320px; }
+.restop b { font-family: var(--f-display); font-stretch: 88%; font-size: 18px; }
+.restop .btn { padding: 11px 20px; font-size: 14px; }
+.btn.xl-export { display: inline-flex; align-items: center; gap: 8px; background: #1d6f42; border-color: #1d6f42; color: #fff; font-size: 15px; padding: 12px 22px; box-shadow: 0 2px 0 #134d2d; }
+.btn.xl-export:hover { background: #185c37; border-color: #185c37; }
+.btn.xl-export:active { transform: translateY(1px); box-shadow: none; }
+.restop { border-left: 4px solid #1d6f42; }
+.setsum > div.clk { cursor: pointer; border-radius: 6px; }
+.setsum > div.clk:hover { background: var(--surface-2); }
+.setsum > div.clk dd::after { content: "ubah"; float: right; font-size: 11.5px; font-weight: 600; color: var(--accent); margin-left: 8px; }
+@media (min-width: 1500px) { .two:not(.one) { grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); } }
 #detail td:nth-child(2) { min-width: 180px; }
 .warnlist { display: grid; gap: 6px; margin-top: 8px; max-height: 360px; overflow: auto; }
 .warn-item { display: flex; gap: 10px; align-items: baseline; font-size: 13px; padding: 7px 10px; border-radius: 6px; background: var(--surface-2); }
@@ -882,6 +906,48 @@ tr.click { cursor: pointer; } tr.click td:first-child { white-space: nowrap; } t
 .busy { position: fixed; inset: 0; background: rgba(10,20,26,.35); display: grid; place-items: center; z-index: 1500; }
 .busy div { background: var(--surface); color: var(--ink); padding: 16px 22px; border-radius: 10px; font-weight: 600; }
 .sample-note { font-size: 12px; padding: 6px 10px; border-radius: 6px; background: var(--accent-soft); margin-top: 10px; }
+/* ringkasan pengaturan di panel kiri + jendela pengaturan */
+.setsum { display: grid; gap: 2px; margin: 0; }
+.setsum > div { display: grid; grid-template-columns: 112px minmax(0, 1fr); gap: 10px; align-items: baseline; padding: 7px 0; border-top: 1px solid var(--line); font-size: 13px; }
+.setsum > div:first-child { border-top: 0; padding-top: 0; }
+.setsum dt { color: var(--muted); font-size: 12px; }
+.setsum dd { margin: 0; font-variant-numeric: tabular-nums; }
+.setsum dd small { color: var(--muted); font-size: 12px; }
+.stepper { display: inline-flex; align-items: center; border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
+.stepper button { font: inherit; font-weight: 700; width: 32px; height: 30px; border: 0; background: var(--surface-2); color: var(--ink); cursor: pointer; }
+.stepper button:hover { background: var(--accent-soft); }
+.stepper output { min-width: 40px; text-align: center; font-family: var(--f-mono); font-weight: 600; }
+.setbtns { display: flex; gap: 8px; margin-top: 12px; }
+.setbtns .btn { flex: 1; }
+dialog.dlg { border: 0; padding: 0; border-radius: 12px; width: min(720px, calc(100vw - 24px)); max-height: calc(100vh - 32px); background: var(--surface); color: var(--ink); box-shadow: 0 18px 60px rgba(0,0,0,.3); }
+dialog.dlg::backdrop { background: rgba(10,20,26,.45); }
+.dlg form { display: grid; grid-template-rows: auto auto minmax(0, 1fr) auto; max-height: calc(100vh - 32px); }
+.dlg-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 16px 18px 10px; }
+.dlg-head h2 { font-family: var(--f-display); font-stretch: 88%; font-size: 19px; margin: 0; }
+.dlg-x { font: inherit; font-size: 22px; line-height: 1; width: 34px; height: 34px; border-radius: 6px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); cursor: pointer; }
+.tabs { display: flex; gap: 4px; padding: 0 18px; border-bottom: 1px solid var(--line); overflow-x: auto; }
+.tabs button { font: inherit; font-size: 13px; font-weight: 600; padding: 9px 12px; border: 0; border-bottom: 2.5px solid transparent; background: none; color: var(--muted); cursor: pointer; white-space: nowrap; }
+.tabs button[aria-selected="true"] { color: var(--ink); border-bottom-color: var(--accent); }
+.dlg-body { overflow: auto; padding: 16px 18px; }
+.dlg-body .sgroup { border-top: 0; padding: 0; }
+.dlg-body .sgroup .gt { display: none; }
+.dlg-foot { display: flex; justify-content: space-between; gap: 8px; padding: 12px 18px; border-top: 1px solid var(--line); background: var(--surface-2); border-radius: 0 0 12px 12px; }
+.tabnote { grid-column: 1 / -1; font-size: 12.5px; color: var(--muted); margin: 0 0 4px; }
+/* tingkat perbaikan: tombol segmen */
+.seg { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; padding: 4px; border: 1px solid var(--line); border-radius: var(--r); background: var(--surface-2); }
+.seg label { text-align: center; font-weight: 600; font-size: 13px; padding: 8px 4px; border-radius: 6px; cursor: pointer; color: var(--muted); }
+.seg label:has(input:checked) { background: var(--accent); color: var(--accent-ink); }
+.seg input { position: absolute; opacity: 0; pointer-events: none; }
+.seg-desc { font-size: 12.5px; color: var(--muted); margin: 8px 0 0; min-height: 3em; }
+details#mapping > summary { cursor: pointer; list-style: none; display: flex; justify-content: space-between; gap: 8px; align-items: center; margin-top: 12px; padding: 8px 10px; border-radius: 6px; background: var(--surface-2); font-size: 13px; font-weight: 600; }
+details#mapping > summary::-webkit-details-marker { display: none; }
+details#mapping > summary .ms { font-weight: 500; font-size: 12px; }
+details#mapping > summary .ms.ok { color: var(--ok); } details#mapping > summary .ms.bad { color: var(--bad); }
+details#mapping[open] > summary { margin-bottom: 8px; }
+.adv { margin-top: 12px; }
+.adv > summary { cursor: pointer; font-size: 13px; font-weight: 600; color: var(--accent); list-style: none; }
+.adv > summary::-webkit-details-marker { display: none; }
+.adv > summary::before { content: "▸ "; } .adv[open] > summary::before { content: "▾ "; }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
 @media (max-width: 520px) { .map-grid, .sgroup { grid-template-columns: minmax(0, 1fr); } #map { height: 420px; } }
 </style>
@@ -892,13 +958,17 @@ tr.click { cursor: pointer; } tr.click td:first-child { white-space: nowrap; } t
     <p class="privacy"><span class="dot"></span><span><b>Data diproses di browser ini saja.</b> File toko dan omset tidak dikirim ke server mana pun.</span></p>
   </header>
 
+  <section class="start" aria-labelledby="start-q">
+    <h2 class="start-q" id="start-q">Mau melakukan apa?</h2>
+    <div class="modes" role="group" aria-labelledby="start-q">
+      <button type="button" id="mode-build" aria-pressed="true"><svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M9 9v11M15 9v11"/></svg><b>Susun JKS baru</b><span>Punya daftar toko, belum ada JKS. Aplikasi yang membagi salesman, hari, dan rute.</span><em>Dipilih</em></button>
+      <button type="button" id="mode-fix" aria-pressed="false"><svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20 15 9"/><path d="m14 4 1.5 3L19 8.5 15.5 10 14 13l-1.5-3L9 8.5 12.5 7z"/></svg><b>Perbaiki JKS otomatis</b><span>Sudah punya JKS, tapi ada jalur lewat jam atau wilayah tumpang tindih. Aplikasi merapikan seperlunya.</span><em>Dipilih</em></button>
+      <button type="button" id="mode-edit" aria-pressed="false"><svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="m13.5 6.5 4 4"/></svg><b>Edit JKS sendiri</b><span>Sudah punya JKS. Lihat di peta, lalu pindahkan toko atau hari sendiri.</span><em>Dipilih</em></button>
+    </div>
+  </section>
+
   <div class="layout">
     <aside class="side">
-      <div class="modes" role="group" aria-label="Mode aplikasi">
-        <button type="button" id="mode-build" aria-pressed="true">Susun baru<small>dari daftar toko</small></button>
-        <button type="button" id="mode-edit" aria-pressed="false">Edit manual<small>JKS yang sudah ada</small></button>
-        <button type="button" id="mode-fix" aria-pressed="false">Perbaiki otomatis<small>JKS yang sudah ada</small></button>
-      </div>
       <section class="panel" id="p-data">
         <h2><span class="step">1</span><span id="data-title">Data toko</span></h2>
         <div class="drop" id="drop" tabindex="0" role="button" aria-label="Pilih file Excel atau CSV">
@@ -912,90 +982,39 @@ tr.click { cursor: pointer; } tr.click td:first-child { white-space: nowrap; } t
           <button class="btn only-build" id="btn-sample" type="button">Pakai data contoh</button>
         </div>
         <div id="fileinfo"></div>
-        <div id="mapping" hidden>
-          <h3>Pencocokan kolom</h3>
+        <details id="mapping" hidden>
+          <summary><span>Pencocokan kolom</span><span class="ms" id="map-sum"></span></summary>
           <p class="hint">Sudah dicocokkan otomatis. Ubah kalau ada yang salah.</p>
           <div class="map-grid" id="mapgrid" style="margin-top:8px"></div>
-        </div>
+        </details>
         <div id="checks"></div>
       </section>
 
       <section class="panel" id="p-set">
         <h2><span class="step">2</span>Pengaturan</h2>
         <p class="hint only-edit" style="margin:-4px 0 10px">Dipakai untuk menghitung jam check-in dan menandai jalur yang lewat batas. Pembagian toko tidak diubah.</p>
-        <div class="settings">
-          <div class="sgroup">
-            <div class="gt">Depo</div>
-            <div class="field"><label for="s-depotLat">Latitude depo</label><input type="number" step="0.0001" id="s-depotLat"></div>
-            <div class="field"><label for="s-depotLng">Longitude depo</label><input type="number" step="0.0001" id="s-depotLng"></div>
-            <div class="full row"><button class="btn" type="button" id="btn-pick">Pilih titik depo di peta</button><span class="hint">atau geser ikon D di peta</span></div>
-          </div>
-          <div class="sgroup">
-            <div class="gt">Tim &amp; jam kerja</div>
-            <div class="field only-build"><label for="s-nSales">Jumlah salesman</label><input type="number" min="1" max="30" id="s-nSales"></div>
-            <div class="field"><label for="s-days">Hari kerja per pekan</label><select id="s-days"><option value="5">5 (Senin–Jumat)</option><option value="6">6 (Senin–Sabtu)</option></select></div>
-            <div class="field"><label for="s-start">Berangkat dari depo</label><input type="time" id="s-start"></div>
-            <div class="field"><label for="s-lastCheckin">Batas check-in terakhir</label><input type="time" id="s-lastCheckin"></div>
-            <div class="field"><label for="s-svc">Waktu di toko</label><div class="unit"><input type="number" min="5" max="120" id="s-svc"><em>menit</em></div></div>
-            <div class="field"><label for="s-rest">Istirahat</label><div class="unit"><input type="number" min="0" max="120" id="s-rest"><em>menit</em></div></div>
-            <div class="field"><label for="s-restAt">Istirahat mulai sekitar</label><input type="time" id="s-restAt"></div>
-          </div>
-          <div class="sgroup">
-            <div class="gt">Jarak &amp; kecepatan</div>
-            <div class="field"><label for="s-roadFactor">Faktor belokan jalan</label><div class="unit"><input type="number" step="0.05" min="1" max="3" id="s-roadFactor"><em>× lurus</em></div></div>
-            <div class="field"><label for="s-vBreak">Batas kecepatan rendah</label><div class="unit"><input type="number" min="0" max="100" id="s-vBreak"><em>km</em></div></div>
-            <div class="field"><label for="s-v1">Kecepatan awal</label><div class="unit"><input type="number" min="5" max="80" id="s-v1"><em>km/jam</em></div></div>
-            <div class="field"><label for="s-v2">Kecepatan lanjutan</label><div class="unit"><input type="number" min="5" max="80" id="s-v2"><em>km/jam</em></div></div>
-          </div>
-          <div class="sgroup">
-            <div class="gt">Zona &amp; jumlah toko per hari</div>
-            <div class="field"><label for="s-zoneNear">Dekat sampai</label><div class="unit"><input type="number" min="1" id="s-zoneNear"><em>km</em></div></div>
-            <div class="field"><label for="s-zoneMid">Sedang sampai</label><div class="unit"><input type="number" min="1" id="s-zoneMid"><em>km</em></div></div>
-            <div class="zonebar" id="zonebar"></div>
-            <div class="field"><label for="s-capNear">Maks toko · Dekat</label><input type="number" min="1" max="40" id="s-capNear"></div>
-            <div class="field"><label for="s-capMid">Maks toko · Sedang</label><input type="number" min="1" max="40" id="s-capMid"></div>
-            <div class="field"><label for="s-capFar">Maks toko · Jauh</label><input type="number" min="1" max="40" id="s-capFar"></div>
-            <div class="field"><label for="s-minNear">Min toko · Dekat</label><input type="number" min="0" max="40" id="s-minNear"></div>
-            <div class="field"><label for="s-minMid">Min toko · Sedang</label><input type="number" min="0" max="40" id="s-minMid"></div>
-            <div class="field"><label for="s-minFar">Min toko · Jauh</label><input type="number" min="0" max="40" id="s-minFar"></div>
-          </div>
-          <div class="sgroup only-build">
-            <div class="gt">Jenis kunjungan</div>
-            <div class="field"><label for="s-basis">Ditentukan dari</label><select id="s-basis"><option value="kelas">Kelas toko</option><option value="ec">Rata-rata EC 3 bulan</option></select></div>
-            <div class="field" id="ec-field"><label for="s-ecM1">EC minimal untuk M1</label><div class="unit"><input type="number" step="0.1" min="0.1" id="s-ecM1"><em>EC/bln</em></div></div>
-            <p class="hint full" id="ec-hint"></p>
-            <div class="field"><label for="s-fFA">Flagship Aktif</label><select id="s-fFA"><option value="4">M1 · tiap pekan</option><option value="2">M2 · pekan 1&amp;3 / 2&amp;4</option></select></div>
-            <div class="field"><label for="s-fFP">Flagship Pasif</label><select id="s-fFP"><option value="4">M1 · tiap pekan</option><option value="2">M2 · pekan 1&amp;3 / 2&amp;4</option></select></div>
-            <div class="field"><label for="s-fA">GT A</label><select id="s-fA"><option value="4">M1 · tiap pekan</option><option value="2">M2 · pekan 1&amp;3 / 2&amp;4</option></select></div>
-            <div class="field"><label for="s-fB">GT B</label><select id="s-fB"><option value="4">M1 · tiap pekan</option><option value="2">M2 · pekan 1&amp;3 / 2&amp;4</option></select></div>
-            <div class="field"><label for="s-fC">GT C</label><select id="s-fC"><option value="4">M1 · tiap pekan</option><option value="2">M2 · pekan 1&amp;3 / 2&amp;4</option></select></div>
-            <div class="field"><label for="s-fNT">Tidak transaksi (NT/Z)</label><select id="s-fNT"><option value="4">M1 · tiap pekan</option><option value="2">M2 · pekan 1&amp;3 / 2&amp;4</option></select></div>
-          </div>
-          <div class="sgroup only-build">
-            <div class="gt">Logika wilayah</div>
-            <label class="tg full"><input type="checkbox" id="s-atomize"> Satukan toko di titik yang sama (≤ 60 m) dalam satu jalur</label>
-            <label class="tg full"><input type="checkbox" id="s-gapAware"> Hindari wilayah yang memotong celah (sungai, sawah, lahan kosong)</label>
-            <label class="tg full"><input type="checkbox" id="s-kecBlock"> Blok per kecamatan: 1 kecamatan utuh dipegang 1 salesman</label>
-            <p class="hint full">Blok kecamatan butuh kolom Kecamatan yang rapi. Bila kecamatannya besar dibanding jumlah toko per salesman, beban bisa kurang rata.</p>
-          </div>
-        </div>
-        <div class="row" style="margin-top:8px"><button class="btn" type="button" id="btn-reset">Kembalikan nilai awal</button></div>
+        <dl class="setsum" id="setsum"></dl>
+        <div class="setbtns"><button class="btn" type="button" id="btn-set">Ubah pengaturan</button></div>
       </section>
 
       <button class="btn primary big only-build" id="btn-run" type="button" disabled>3 · Susun JKS</button>
       <section class="panel only-fix" id="p-fix">
         <h2><span class="step">3</span>Tingkat perbaikan</h2>
-        <div class="lvl">
-          <label><input type="radio" name="fixlvl" value="ringan"><b>Ringan</b><span>Hanya membereskan pelanggaran: jalur lewat batas, melebihi kapasitas, toko nyasar, toko satu titik yang terpisah.</span></label>
-          <label><input type="radio" name="fixlvl" value="sedang" checked><b>Sedang</b><span>Ringan + merapikan batas wilayah salesman dan area hari yang terpecah atau tumpang tindih.</span></label>
-          <label><input type="radio" name="fixlvl" value="penuh"><b>Penuh</b><span>Sedang + meratakan jam kerja antar salesman. Perubahan paling banyak.</span></label>
+        <div class="seg" role="radiogroup" aria-label="Tingkat perbaikan">
+          <label><input type="radio" name="fixlvl" value="ringan">Ringan</label>
+          <label><input type="radio" name="fixlvl" value="sedang" checked>Sedang</label>
+          <label><input type="radio" name="fixlvl" value="penuh">Penuh</label>
         </div>
-        <p class="hint" style="margin-top:10px">Toko yang tidak boleh dipindah: beri kolom <b>Kunci</b> berisi "Ya" di file. Jenis kunjungan (M1/M2) tidak diubah, kecuali dipilih di bawah; pekan C13/C24 bisa bergeser.</p>
-        <div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--line);display:grid;gap:8px">
-          <label class="tg"><input type="checkbox" id="fx-ec"> <b>Ubah M1/M2 dari rata-rata EC 3 bulan</b></label>
-          <div class="field" id="fx-ec-f" style="max-width:220px"><label for="fx-ecM1">EC minimal untuk M1</label><div class="unit"><input type="number" step="0.1" min="0.1" id="fx-ecM1" value="3"><em>EC/bln</em></div></div>
-          <p class="hint" id="fx-ec-hint"></p>
-        </div>
+        <p class="seg-desc" id="lvl-desc"></p>
+        <details class="adv">
+          <summary>Opsi lanjutan</summary>
+          <div style="display:grid;gap:8px;margin-top:10px">
+            <label class="tg"><input type="checkbox" id="fx-ec"> <b>Ubah M1/M2 dari rata-rata EC 3 bulan</b></label>
+            <div class="field" id="fx-ec-f" style="max-width:220px"><label for="fx-ecM1">EC minimal untuk M1</label><div class="unit"><input type="number" step="0.1" min="0.1" id="fx-ecM1" value="3"><em>EC/bln</em></div></div>
+            <p class="hint" id="fx-ec-hint"></p>
+            <p class="hint">Toko yang tidak boleh dipindah: beri kolom <b>Kunci</b> berisi "Ya" di file. Jenis kunjungan (M1/M2) tidak diubah kecuali opsi di atas dicentang; pekan C13/C24 bisa bergeser.</p>
+          </div>
+        </details>
       </section>
       <button class="btn primary big only-edit only-plainedit" id="btn-show" type="button" disabled>3 · Tampilkan JKS untuk diedit</button>
       <button class="btn primary big only-fix" id="btn-fix" type="button" disabled>4 · Perbaiki JKS otomatis</button>
@@ -1011,14 +1030,6 @@ tr.click { cursor: pointer; } tr.click td:first-child { white-space: nowrap; } t
       </section>
       <div id="out" hidden>
         <section class="panel" id="p-fixres" hidden></section>
-        <section class="panel">
-          <h2>Ringkasan hasil</h2>
-          <div class="kpis" id="kpis"></div>
-          <div class="namebox"><h3>Nama salesman <span class="hint" style="text-transform:none;letter-spacing:0;font-weight:400">diisi supervisor · wilayah dibagi aplikasi, nama tinggal dipasangkan</span></h3><div class="names" id="e-names"></div></div>
-          <div class="tbl-wrap"><table id="t-sum"></table></div>
-          <div class="row" style="margin-top:14px"><button class="btn primary" id="btn-export" type="button">Ekspor Excel</button><span class="hint" id="export-hint"></span></div>
-        </section>
-
         <section class="panel" id="p-map">
           <h2>Peta JKS</h2>
           <div class="mapbar">
@@ -1051,6 +1062,25 @@ tr.click { cursor: pointer; } tr.click td:first-child { white-space: nowrap; } t
           <div class="legend"><span><i style="background:var(--ok-soft);border:1px solid var(--ok)"></i>Selesai sebelum 15.30</span><span><i style="background:var(--warn-soft);border:1px solid var(--warn)"></i>15.30–batas</span><span><i style="background:var(--bad)"></i>Lewat batas / lebih dari kapasitas</span><span><i style="background:var(--surface);box-shadow:inset 0 0 0 1.5px var(--warn)"></i>Kurang dari minimal toko</span></div>
         </section>
 
+        <section class="panel restop">
+          <div><b id="res-state">Hasil JKS</b><span class="hint" id="export-hint"></span></div>
+          <button class="btn xl-export" id="btn-export" type="button"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11"/><path d="m7 10 5 5 5-5"/><path d="M5 20h14"/></svg>Ekspor ke Excel</button>
+        </section>
+        <section class="panel" id="p-warn">
+            <h2>Yang perlu dicek</h2>
+            <p class="hint">Jalur atau toko yang belum sesuai aturan: check-in terakhir lewat batas jam, toko melebihi kapasitas, toko di bawah minimal per hari, atau toko yang tidak masuk JKS karena datanya bermasalah. Kalau semua aman, di sini tertulis <b>Aman</b>.</p>
+            <div id="warns"></div>
+            <details class="adv"><summary>Cara aplikasi menghitung kapasitas</summary>
+            <p class="hint" style="margin-top:8px">Toko per hari = 1 + (batas check-in − berangkat − perjalanan ke toko pertama − istirahat) ÷ (waktu di toko + waktu antar toko). Angka dipakai = yang lebih kecil antara rumus dan batas maksimal.</p>
+            <div class="tbl-wrap"><table id="t-cap"></table></div></details>
+            <div id="asis"></div>
+        </section>
+
+
+
+
+
+
 
         <section class="panel" id="p-edit">
           <h2>Edit oleh Supervisor</h2>
@@ -1065,24 +1095,102 @@ tr.click { cursor: pointer; } tr.click td:first-child { white-space: nowrap; } t
           <div class="edit-log" id="e-log"></div>
         </section>
 
-        <div class="two">
+        <div class="two one">
           <section class="panel">
             <h2 id="detail-title">Detail jalur</h2>
             <div id="detail"><p class="hint">Pilih satu salesman, satu pekan, dan satu hari (atau klik sel di matriks) untuk melihat urutan toko dan jam check-in.</p></div>
           </section>
-          <section class="panel">
-            <h2>Peringatan</h2>
-            <div id="warns"></div>
-            <h3>Kapasitas menurut rumus (aturan 3)</h3>
-            <p class="hint">Toko per hari = 1 + (batas check-in − berangkat − perjalanan ke toko pertama − istirahat) ÷ (waktu di toko + waktu antar toko). Angka dipakai = yang lebih kecil antara rumus dan batas maksimal.</p>
-            <div class="tbl-wrap"><table id="t-cap"></table></div>
-            <div id="asis"></div>
-          </section>
+
         </div>
+
+        <section class="panel">
+          <h2>Ringkasan per salesman</h2>
+          <div class="kpis" id="kpis"></div>
+          <div class="namebox"><h3>Nama salesman <span class="hint" style="text-transform:none;letter-spacing:0;font-weight:400">diisi supervisor · wilayah dibagi aplikasi, nama tinggal dipasangkan</span></h3><div class="names" id="e-names"></div></div>
+          <div class="tbl-wrap"><table id="t-sum"></table></div>
+        </section>
       </div>
     </main>
   </div>
 </div>
+<dialog class="dlg" id="dlg-set" aria-labelledby="dlg-set-t">
+  <form method="dialog">
+    <div class="dlg-head"><h2 id="dlg-set-t">Pengaturan</h2><button class="dlg-x" type="button" id="dlg-set-x" aria-label="Tutup">×</button></div>
+    <div class="tabs" role="tablist">
+      <button type="button" role="tab" data-t="depo" aria-selected="true">Depo</button>
+      <button type="button" role="tab" data-t="jam" aria-selected="false">Jam kerja</button>
+      <button type="button" role="tab" data-t="jarak" aria-selected="false">Jarak &amp; kecepatan</button>
+      <button type="button" role="tab" data-t="zona" aria-selected="false">Toko per hari &amp; zona</button>
+      <button type="button" role="tab" data-t="jenis" aria-selected="false" class="only-build">Jenis kunjungan</button>
+      <button type="button" role="tab" data-t="wilayah" aria-selected="false" class="only-build">Logika wilayah</button>
+    </div>
+    <div class="dlg-body">
+        <div class="settings">
+          <div data-tab="depo" class="sgroup">
+            <div class="gt">Depo</div>
+            <p class="tabnote">Titik depo jadi awal dan akhir setiap rute.</p>
+            <div class="field"><label for="s-depotLat">Latitude depo</label><input type="number" step="0.0001" id="s-depotLat"></div>
+            <div class="field"><label for="s-depotLng">Longitude depo</label><input type="number" step="0.0001" id="s-depotLng"></div>
+            <div class="full row"><button class="btn" type="button" id="btn-pick">Pilih titik depo di peta</button><span class="hint">atau geser ikon D di peta</span></div>
+          </div>
+          <div data-tab="jam" class="sgroup">
+            <div class="gt">Tim &amp; jam kerja</div>
+            <p class="tabnote">Berangkat = jam keluar dari kantor (depo), bukan jam tiba di toko pertama. Jam tiba di toko pertama dihitung otomatis dari jaraknya.</p>
+            <div class="field only-build"><label for="s-nSales">Jumlah salesman</label><input type="number" min="1" max="30" id="s-nSales"></div>
+            <div class="field"><label for="s-days">Hari kerja per pekan</label><select id="s-days"><option value="5">5 (Senin–Jumat)</option><option value="6">6 (Senin–Sabtu)</option></select></div>
+            <div class="field"><label for="s-start">Berangkat dari kantor (depo)</label><input type="time" id="s-start"></div>
+            <div class="field"><label for="s-lastCheckin">Batas check-in terakhir</label><input type="time" id="s-lastCheckin"></div>
+            <div class="field"><label for="s-svc">Waktu di toko</label><div class="unit"><input type="number" min="5" max="120" id="s-svc"><em>menit</em></div></div>
+            <div class="field"><label for="s-rest">Istirahat</label><div class="unit"><input type="number" min="0" max="120" id="s-rest"><em>menit</em></div></div>
+            <div class="field"><label for="s-restAt">Istirahat mulai sekitar</label><input type="time" id="s-restAt"></div>
+          </div>
+          <div data-tab="jarak" class="sgroup">
+            <div class="gt">Jarak &amp; kecepatan</div>
+            <p class="tabnote">Jarak jalan = jarak garis lurus × faktor belokan.</p>
+            <div class="field"><label for="s-roadFactor">Faktor belokan jalan</label><div class="unit"><input type="number" step="0.05" min="1" max="3" id="s-roadFactor"><em>× lurus</em></div></div>
+            <div class="field"><label for="s-vBreak">Batas kecepatan rendah</label><div class="unit"><input type="number" min="0" max="100" id="s-vBreak"><em>km</em></div></div>
+            <div class="field"><label for="s-v1">Kecepatan awal</label><div class="unit"><input type="number" min="5" max="80" id="s-v1"><em>km/jam</em></div></div>
+            <div class="field"><label for="s-v2">Kecepatan lanjutan</label><div class="unit"><input type="number" min="5" max="80" id="s-v2"><em>km/jam</em></div></div>
+          </div>
+          <div data-tab="zona" class="sgroup">
+            <div class="gt">Zona &amp; jumlah toko per hari</div>
+            <p class="tabnote">Zona ditentukan dari jarak jalan toko ke depo. Kapasitas dan minimal toko per hari berbeda per zona.</p>
+            <div class="field"><label for="s-zoneNear">Dekat sampai</label><div class="unit"><input type="number" min="1" id="s-zoneNear"><em>km</em></div></div>
+            <div class="field"><label for="s-zoneMid">Sedang sampai</label><div class="unit"><input type="number" min="1" id="s-zoneMid"><em>km</em></div></div>
+            <div class="zonebar" id="zonebar"></div>
+            <div class="field"><label for="s-capNear">Maks toko · Dekat</label><input type="number" min="1" max="40" id="s-capNear"></div>
+            <div class="field"><label for="s-capMid">Maks toko · Sedang</label><input type="number" min="1" max="40" id="s-capMid"></div>
+            <div class="field"><label for="s-capFar">Maks toko · Jauh</label><input type="number" min="1" max="40" id="s-capFar"></div>
+            <div class="field"><label for="s-minNear">Min toko · Dekat</label><input type="number" min="0" max="40" id="s-minNear"></div>
+            <div class="field"><label for="s-minMid">Min toko · Sedang</label><input type="number" min="0" max="40" id="s-minMid"></div>
+            <div class="field"><label for="s-minFar">Min toko · Jauh</label><input type="number" min="0" max="40" id="s-minFar"></div>
+          </div>
+          <div data-tab="jenis" class="sgroup only-build">
+            <div class="gt">Jenis kunjungan</div>
+            <p class="tabnote">Menentukan toko mana yang dikunjungi tiap pekan (M1) dan dua pekan sekali (M2).</p>
+            <div class="field"><label for="s-basis">Ditentukan dari</label><select id="s-basis"><option value="kelas">Kelas toko</option><option value="ec">Rata-rata EC 3 bulan</option></select></div>
+            <div class="field" id="ec-field"><label for="s-ecM1">EC minimal untuk M1</label><div class="unit"><input type="number" step="0.1" min="0.1" id="s-ecM1"><em>EC/bln</em></div></div>
+            <p class="hint full" id="ec-hint"></p>
+            <div class="field"><label for="s-fFA">Flagship Aktif</label><select id="s-fFA"><option value="4">M1 · tiap pekan</option><option value="2">M2 · pekan 1&amp;3 / 2&amp;4</option></select></div>
+            <div class="field"><label for="s-fFP">Flagship Pasif</label><select id="s-fFP"><option value="4">M1 · tiap pekan</option><option value="2">M2 · pekan 1&amp;3 / 2&amp;4</option></select></div>
+            <div class="field"><label for="s-fA">GT A</label><select id="s-fA"><option value="4">M1 · tiap pekan</option><option value="2">M2 · pekan 1&amp;3 / 2&amp;4</option></select></div>
+            <div class="field"><label for="s-fB">GT B</label><select id="s-fB"><option value="4">M1 · tiap pekan</option><option value="2">M2 · pekan 1&amp;3 / 2&amp;4</option></select></div>
+            <div class="field"><label for="s-fC">GT C</label><select id="s-fC"><option value="4">M1 · tiap pekan</option><option value="2">M2 · pekan 1&amp;3 / 2&amp;4</option></select></div>
+            <div class="field"><label for="s-fNT">Tidak transaksi (NT/Z)</label><select id="s-fNT"><option value="4">M1 · tiap pekan</option><option value="2">M2 · pekan 1&amp;3 / 2&amp;4</option></select></div>
+          </div>
+          <div data-tab="wilayah" class="sgroup only-build">
+            <div class="gt">Logika wilayah</div>
+            <p class="tabnote">Cara aplikasi merapikan batas wilayah saat menyusun.</p>
+            <label class="tg full"><input type="checkbox" id="s-atomize"> Satukan toko di titik yang sama (≤ 60 m) dalam satu jalur</label>
+            <label class="tg full"><input type="checkbox" id="s-gapAware"> Hindari wilayah yang memotong celah (sungai, sawah, lahan kosong)</label>
+            <label class="tg full"><input type="checkbox" id="s-kecBlock"> Blok per kecamatan: 1 kecamatan utuh dipegang 1 salesman</label>
+            <p class="hint full">Blok kecamatan butuh kolom Kecamatan yang rapi. Bila kecamatannya besar dibanding jumlah toko per salesman, beban bisa kurang rata.</p>
+          </div>
+        </div>
+    </div>
+    <div class="dlg-foot"><button class="btn" type="button" id="btn-reset">Kembalikan nilai awal</button><button class="btn primary" type="button" id="dlg-set-ok">Selesai</button></div>
+  </form>
+</dialog>
 <div class="busy" id="busy" hidden><div id="busy-msg">Menyusun JKS…</div></div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
@@ -1095,7 +1203,7 @@ tr.click { cursor: pointer; } tr.click td:first-child { white-space: nowrap; } t
   const DEFAULTS = {
     depotLat: -6.9425, depotLng: 107.652,
     nSales: 4,
-    start: 8 * 60,          // 08.00
+    start: 8 * 60 + 30,     // 08.30 berangkat dari kantor/depo
     lastCheckin: 16 * 60,   // 16.00
     svc: 25,                // menit di toko
     rest: 30,               // istirahat
@@ -2390,7 +2498,42 @@ function basisUI() {
 ['s-basis', 's-ecM1'].forEach(id => $(id).addEventListener('change', () => { basisUI(); if (state.data.length) revalidate(); }));
 setForm(JKS.DEFAULTS);
 ['s-zoneNear', 's-zoneMid'].forEach(id => $(id).addEventListener('input', zoneBar));
-$('btn-reset').onclick = () => { setForm(JKS.DEFAULTS); placeDepot(); toast('Pengaturan dikembalikan ke nilai awal pilot Bandung Selatan'); };
+$('btn-reset').onclick = () => { setForm(JKS.DEFAULTS); placeDepot(); renderSetSum(); toast('Pengaturan dikembalikan ke nilai awal pilot Bandung Selatan'); };
+// ringkasan pengaturan (panel kiri) + jendela pengaturan
+function renderSetSum() {
+  const v = id => $('s-' + id).value, edit = !!state.editMode;
+  const near = v('zoneNear'), mid = v('zoneMid');
+  const isDef = Math.abs(+v('depotLat') - JKS.DEFAULTS.depotLat) < 1e-4 && Math.abs(+v('depotLng') - JKS.DEFAULTS.depotLng) < 1e-4;
+  const jenis = v('basis') === 'ec' ? `Dari rata-rata EC · M1 jika EC ≥ ${esc(v('ecM1'))}` : 'Dari kelas toko';
+  const wil = [$('s-atomize').checked && 'atom', $('s-gapAware').checked && 'hindari celah', $('s-kecBlock').checked && 'blok kecamatan'].filter(Boolean).join(' · ') || 'standar';
+  const rows = [];
+  if (!edit) rows.push(['Salesman', `<span class="stepper"><button type="button" id="ns-dn" aria-label="Kurangi salesman">−</button><output id="ns-v">${esc(v('nSales'))}</output><button type="button" id="ns-up" aria-label="Tambah salesman">+</button></span>`]);
+  rows.push(['Depo', isDef ? 'Bandung Selatan <small>(nilai awal)</small>' : `${esc((+v('depotLat')).toFixed(4))}, ${esc((+v('depotLng')).toFixed(4))}`]);
+  rows.push(['Jam kerja', `${v('days')} hari · berangkat dari kantor ${esc(v('start'))}<br>Check-in terakhir maks ${esc(v('lastCheckin'))} <small>· ${esc(v('svc'))} mnt/toko</small>`]);
+  rows.push(['Toko per hari', `Maksimal ${esc(v('capNear'))} / ${esc(v('capMid'))} / ${esc(v('capFar'))}<br>Minimal ${esc(v('minNear'))} / ${esc(v('minMid'))} / ${esc(v('minFar'))} <small>(dekat / sedang / jauh)</small>`]);
+  rows.push(['Zona', `Dekat ≤${esc(near)} · sedang ≤${esc(mid)} · jauh >${esc(mid)} km`]);
+  if (!edit) { rows.push(['Jenis kunjungan', jenis]); rows.push(['Logika wilayah', wil]); }
+  const TAB = { 'Depo': 'depo', 'Jam kerja': 'jam', 'Toko per hari': 'zona', 'Zona': 'zona', 'Jenis kunjungan': 'jenis', 'Logika wilayah': 'wilayah' };
+  $('setsum').innerHTML = rows.map(([a, b]) => TAB[a] ? `<div class="clk" data-tab="${TAB[a]}" role="button" tabindex="0" title="Ubah ${a.toLowerCase()}"><dt>${a}</dt><dd>${b}</dd></div>` : `<div><dt>${a}</dt><dd>${b}</dd></div>`).join('');
+  $('setsum').querySelectorAll('.clk').forEach(r => { r.onclick = () => openSet(r.dataset.tab); r.onkeydown = e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openSet(r.dataset.tab); } }; });
+  if (!edit) {
+    const step = d => { const n = Math.max(1, Math.min(30, (+v('nSales') || 1) + d)); $('s-nSales').value = n; $('s-nSales').dispatchEvent(new Event('change', { bubbles: true })); renderSetSum(); };
+    $('ns-dn').onclick = () => step(-1); $('ns-up').onclick = () => step(1);
+  }
+}
+const dlgSet = $('dlg-set');
+function setTab(t) {
+  dlgSet.querySelectorAll('.tabs button').forEach(b => b.setAttribute('aria-selected', String(b.dataset.t === t)));
+  dlgSet.querySelectorAll('.dlg-body .sgroup').forEach(g => { g.hidden = g.dataset.tab !== t; });
+}
+dlgSet.querySelectorAll('.tabs button').forEach(b => b.onclick = () => setTab(b.dataset.t));
+function openSet(tab) { setTab(tab || 'depo'); if (dlgSet.showModal) dlgSet.showModal(); else dlgSet.setAttribute('open', ''); }
+function closeSet() { if (dlgSet.close) dlgSet.close(); else dlgSet.removeAttribute('open'); }
+$('btn-set').onclick = () => openSet();
+$('dlg-set-ok').onclick = closeSet; $('dlg-set-x').onclick = closeSet;
+dlgSet.addEventListener('close', renderSetSum);
+dlgSet.addEventListener('input', renderSetSum); dlgSet.addEventListener('change', renderSetSum);
+dlgSet.querySelector('form').addEventListener('submit', e => { e.preventDefault(); closeSet(); });
 ['s-depotLat', 's-depotLng'].forEach(id => $(id).addEventListener('change', () => { placeDepot(); if (state.valid) revalidate(); }));
 
 // ---------- membaca file ----------
@@ -2488,9 +2631,17 @@ function renderMapping() {
   $('mapping').hidden = false;
   const sheetSel = state.wb && state.wb.SheetNames.length > 1 ? `<div class="field full" style="grid-column:1/-1"><label for="m-sheet">Sheet</label><select id="m-sheet">${state.wb.SheetNames.map(n => `<option ${n === state.sheet ? 'selected' : ''}>${esc(n)}</option>`).join('')}</select></div>` : '';
   $('mapgrid').innerHTML = sheetSel + shownFields().map(f => `<div class="field ${isReq(f) ? 'req' : ''}"><label for="m-${f.k}">${f.label}</label><select id="m-${f.k}" data-k="${f.k}"><option value="">— tidak ada —</option>${state.headers.map((h, i) => `<option value="${i}" ${state.map[f.k] === i ? 'selected' : ''}>${esc(h)}</option>`).join('')}</select></div>`).join('');
-  $('mapgrid').querySelectorAll('select[data-k]').forEach(s => s.onchange = () => { const v = s.value; if (v === '') delete state.map[s.dataset.k]; else state.map[s.dataset.k] = +v; revalidate(); });
+  $('mapgrid').querySelectorAll('select[data-k]').forEach(s => s.onchange = () => { const v = s.value; if (v === '') delete state.map[s.dataset.k]; else state.map[s.dataset.k] = +v; revalidate(); mapSum(false); });
   if ($('m-sheet')) $('m-sheet').onchange = e => loadSheet(e.target.value);
+  mapSum(true);
   $('fileinfo').innerHTML = `<div class="fileinfo"><b>${esc(state.fileName)}</b><span class="tag">${state.data.length} baris · sheet ${esc(state.sheet)}</span></div>` + (state.sample ? '<div class="sample-note">Ini <b>data contoh sintetis</b>: 400 baris toko acak di sekitar Bandung Selatan, termasuk 4 baris bermasalah untuk contoh cek data. Bukan data toko asli.</div>' : '');
+}
+function mapSum(setOpen) {
+  const miss = shownFields().filter(f => isReq(f) && state.map[f.k] == null && !(['lat', 'lng'].includes(f.k) && state.map.koord != null) && !(f.k === 'kelas' && !state.editMode && $('s-basis').value === 'ec' && state.map.ec != null));
+  const el = $('map-sum'); if (!el) return;
+  el.className = 'ms ' + (miss.length ? 'bad' : 'ok');
+  el.textContent = miss.length ? miss.length + ' kolom wajib belum dipilih' : 'Semua kolom wajib ketemu · ubah';
+  if (setOpen) $('mapping').open = miss.length > 0;
 }
 function revalidate() {
   if (state.editMode) return revalidateEdit();
@@ -2517,7 +2668,7 @@ function revalidate() {
     <div class="check"><span>M1 · M2${byEc ? ' (dari EC)' : ''}</span><b>${fq[4]} · ${fq[2]}</b></div>
     ${v.merged ? `<div class="check"><span>Baris berulang (kode &amp; titik sama) digabung</span><b>${v.merged}</b></div>` : ''}
     <div class="check ${out ? 'bad' : 'ok'}"><span>Dikeluarkan dari JKS</span><b>${out}</b></div>
-    <div class="check ${wr ? 'warn' : 'ok'}"><span>Peringatan (tetap masuk)</span><b>${wr}</b></div></div>
+    <div class="check ${wr ? 'warn' : 'ok'}"><span>Catatan data (toko tetap masuk)</span><b>${wr}</b></div></div>
     ${v.issues.length ? `<details class="fold"><summary>Lihat ${v.issues.length} masalah data</summary>
       <div class="tbl-wrap"><table><tr><th>Baris</th><th>Kode</th><th>Nama</th><th>Masalah</th></tr>
       ${v.issues.slice(0, 300).map(i => `<tr><td class="n">${esc(i.baris)}</td><td>${esc(i.kode)}</td><td>${esc(i.nama)}</td><td><span class="pill ${i.status === 'Dikeluarkan' ? 'bad' : 'warn'}">${i.status}</span> ${esc(i.masalah)}</td></tr>`).join('')}</table></div>
@@ -2601,7 +2752,8 @@ function placeDepot() {
 }
 function setPicking(on) { picking = on; document.body.classList.toggle('picking', on); $('btn-pick').classList.toggle('on', on); $('btn-pick').textContent = on ? 'Klik di peta… (batal)' : 'Pilih titik depo di peta'; }
 $('btn-pick').onclick = () => {
-  if (!map) { toast('Susun JKS dulu supaya peta tampil'); return; }
+  if (!map) { toast('Tampilkan JKS dulu supaya peta tampil'); return; }
+  closeSet();
   setPicking(!picking);
   if (picking) $('map').scrollIntoView({ behavior: 'smooth', block: 'center' });
 };
@@ -2661,6 +2813,9 @@ $('btn-run').onclick = () => {
 function cellClass(r, c) { if (!r.order.length) return ''; if (r.sc.lastCheckin > c.lastCheckin || r.order.length > r.cap) return 'bad'; if (r.min && r.order.length < r.min) return 'low'; if (r.sc.lastCheckin > c.lastCheckin - 30) return 'warn'; return 'ok'; }
 const filt = { s: -1, w: -1, d: -1 };
 function renderAll(keep) {
+  renderSetSum();
+  if (state.res) { const R = state.res, c = R.cfg, act = R.routes.filter(r => r.order.length); const lw = act.filter(r => r.sc.lastCheckin > c.lastCheckin).length, cp = act.filter(r => r.order.length > r.cap).length;
+    $('res-state').textContent = `JKS ${R.stores.length} toko · ${c.nSales} salesman · ` + (lw || cp ? `${lw + cp} jalur perlu dicek` : 'semua jalur aman'); }
   const R = state.res, c = R.cfg;
   $('empty').hidden = true; $('out').hidden = false;
   const routes = R.routes.filter(r => r.order.length);
@@ -2678,7 +2833,7 @@ function renderAll(keep) {
   $('t-sum').innerHTML = `<tr><th>Salesman</th><th class="n">Toko</th><th class="n" title="Flagship Aktif · Flagship Pasif · GT A · GT B · GT C · Tidak transaksi">FA·FP·A·B·C·NT</th><th class="n">Dekat·Sedang·Jauh</th><th class="n">M1·M2C13·M2C24</th><th class="n">Kunjungan /4 pekan</th><th class="n">Toko /hari</th><th class="n">Jam kerja /hari</th><th class="n">Check-in terakhir</th><th class="n">km /2 pekan</th><th>Status</th></tr>` +
     R.summary.map(s => `<tr class="click" data-s="${s.sales}"><td><span class="sw" style="background:${sc(s.sales)}"></span>${salesName(s.sales)}</td><td class="n">${s.toko}</td><td class="n">${s.kelas.join('·')}</td><td class="n">${s.zona.join('·')}</td><td class="n">${s.jenis.slice(0, 3).join('·')}</td><td class="n">${s.kunjungan}</td><td class="n">${nf1(s.rataToko)}</td><td class="n">${nf1(s.rataJam)}</td><td class="n">${fmt(s.lastMax)}</td><td class="n">${nf0(s.km2)}</td><td>${s.lewat || s.lewatCap ? `<span class="pill bad">${s.lewat + s.lewatCap} jalur bermasalah</span>` : s.kurang ? `<span class="pill warn">${s.kurang} jalur kurang toko</span>` : '<span class="pill ok">Aman</span>'}</td></tr>`).join('');
   $('t-sum').querySelectorAll('tr.click').forEach(tr => tr.onclick = () => { filt.s = +tr.dataset.s; filt.d = -1; syncFilters(); renderDetail(); drawMap(); $('map').scrollIntoView({ behavior: 'smooth', block: 'center' }); });
-  $('export-hint').textContent = 'Sheet: JKS, Jalur (dengan link Google Maps), Ringkasan, Toko per Salesman, Toko Bermasalah' + (state.edits.length ? ', Riwayat Edit' : '');
+  $('export-hint').textContent = 'Sheet: JKS per Toko (1 baris per toko)' + (state.src && state.mode !== 'susun' ? ', Format Upload Sistem (kolom sama dengan file asli)' : '') + ', Jadwal per Kunjungan, Jalur (link Google Maps), Ringkasan, Toko Bermasalah' + (state.fix ? ', Perubahan Otomatis' : '') + (state.edits.length ? ', Riwayat Edit' : '');
   renderEditPanel();
   // matriks
   let html = `<div class="mrow head"><span></span>${[0, 1, 2, 3].map(w => `<div><div style="margin-bottom:2px">Pekan ${w + 1}</div><div class="week head">${DAYS.slice(0, c.days).map(d => `<span>${d.slice(0, 3)}</span>`).join('')}</div></div>`).join('')}</div>`;
@@ -2913,8 +3068,8 @@ function recompute() {
 
 // ---------- membuka file hasil ekspor ----------
 function detectExport() {
-  const wb = state.wb; if (!wb || !wb.Sheets['Toko per Salesman']) return;
-  const rows = XLSX.utils.sheet_to_json(wb.Sheets['Toko per Salesman'], { defval: '' });
+  const wb = state.wb; const shName = wb && (wb.Sheets['JKS per Toko'] ? 'JKS per Toko' : wb.Sheets['Toko per Salesman'] ? 'Toko per Salesman' : null); if (!shName) return;
+  const rows = XLSX.utils.sheet_to_json(wb.Sheets[shName], { defval: '' });
   if (!rows.length || !('Jenis Kunjungan' in rows[0]) || !('Latitude' in rows[0])) return;
   $('fileinfo').insertAdjacentHTML('beforeend', `<div class="import-note"><span>File ini hasil ekspor Penyusun JKS (${rows.length} toko). Buka apa adanya supaya bisa diedit, tanpa disusun ulang.</span><div><button class="btn primary" type="button" id="btn-open-export">Buka JKS ini untuk diedit</button></div></div>`);
   $('btn-open-export').onclick = () => openExport(rows);
@@ -2951,6 +3106,7 @@ function setMode(edit, fix) {
   const wasEdit = !!state.editMode;
   state.editMode = edit; state.fixMode = !!fix;
   document.body.classList.toggle('m-edit', edit); document.body.classList.toggle('m-fix', !!fix);
+  renderSetSum();
   $('mode-build').setAttribute('aria-pressed', String(!edit)); $('mode-edit').setAttribute('aria-pressed', String(edit && !fix)); $('mode-fix').setAttribute('aria-pressed', String(!!fix));
   if (wasEdit && edit) { if (state.editPrep) { $('btn-show').disabled = !state.editPrep.stores.length; $('btn-fix').disabled = !state.editPrep.stores.length; } return; }
   $('data-title').textContent = edit ? 'Data JKS' : 'Data toko';
@@ -3053,6 +3209,9 @@ function fxEcHint() {
   $('fx-ec-hint').innerHTML = `Dengan EC ≥ ${esc(nf1(thr))}: <b>${m1}</b> toko M1, ${E.stores.length - m1} M2. ${up} toko naik ke M1, ${down} turun ke M2. Kunjungan per 4 pekan ${nf0(kunjFile)} → <b>${nf0(kunj)}</b>.${noEc ? ' ' + noEc + ' toko tanpa EC tetap memakai jenis dari file.' : ''}`;
 }
 $('fx-ec').onchange = fxEcHint; $('fx-ecM1').oninput = fxEcHint;
+const LVL_DESC = { ringan: 'Hanya membereskan pelanggaran: jalur lewat batas, melebihi kapasitas, toko nyasar, toko satu titik yang terpisah. Perubahan paling sedikit.', sedang: 'Ringan + merapikan batas wilayah salesman dan area hari yang terpecah atau tumpang tindih.', penuh: 'Sedang + meratakan jam kerja antar salesman. Perubahan paling banyak.' };
+function lvlDesc() { const v = (document.querySelector('input[name="fixlvl"]:checked') || {}).value || 'sedang'; $('lvl-desc').textContent = LVL_DESC[v]; }
+document.querySelectorAll('input[name="fixlvl"]').forEach(r => r.onchange = lvlDesc); lvlDesc();
 function revalidateEdit() {
   const missing = FIELDS.filter(f => EDIT_REQ.includes(f.k) && state.map[f.k] == null && !(['lat', 'lng'].includes(f.k) && state.map.koord != null));
   if (missing.length) {
@@ -3073,7 +3232,7 @@ function revalidateEdit() {
     ${E.autoPhase ? `<div class="check warn"><span>M2 tanpa pekan, dibagi otomatis ke C13/C24</span><b>${E.autoPhase}</b></div>` : ''}
     ${E.merged ? `<div class="check"><span>Baris berulang (kode &amp; titik sama) digabung</span><b>${E.merged}</b></div>` : ''}
     <div class="check ${out ? 'bad' : 'ok'}"><span>Tidak bisa ditampilkan</span><b>${out}</b></div>
-    <div class="check ${wr ? 'warn' : 'ok'}"><span>Peringatan (tetap tampil)</span><b>${wr}</b></div></div>
+    <div class="check ${wr ? 'warn' : 'ok'}"><span>Catatan data (toko tetap tampil)</span><b>${wr}</b></div></div>
     <p class="hint" style="margin-top:6px">${esc(E.names.join(', '))}</p>
     ${E.issues.length ? `<details class="fold"><summary>Lihat ${E.issues.length} masalah data</summary>
       <div class="tbl-wrap"><table><tr><th>Baris</th><th>Kode</th><th>Nama</th><th>Masalah</th></tr>
@@ -3087,6 +3246,7 @@ $('btn-show').onclick = () => {
   if (maxDay >= 5) $('s-days').value = '6';
   $('s-nSales').value = E.names.length;
   state.names = E.names.slice(); state.edits = []; state.mode = 'buka';
+  captureSource(E);
   const cfg = readForm(); cfg.nSales = E.names.length; placeDepot();
   const stores = E.stores.map(s => Object.assign({}, s));
   state.res = JKS.fromAssignment(stores, cfg); state.res.issues = E.issues;
@@ -3096,6 +3256,44 @@ $('btn-show').onclick = () => {
   const lewat = act.filter(r => r.sc.lastCheckin > cfg.lastCheckin).length;
   toast('JKS tampil: ' + stores.length + ' toko, ' + E.names.length + ' salesman' + (lewat ? ', ' + lewat + ' jalur lewat ' + fmt(cfg.lastCheckin) : '') + '. Silakan edit.');
 };
+
+// ---------- file asli supervisor: diekspor lagi dengan kolom yang sama ----------
+function captureSource(E) {
+  const m = state.map, cleanName = {};
+  state.data.forEach(x => { const raw = x.r[m.sales]; const c = cleanSales(raw); if (c && !(c in cleanName)) cleanName[c] = raw; });
+  // kolom yang nilainya melekat ke salesman (mis. KD SLS): ikut berubah kalau toko pindah salesman
+  const attr = {};
+  state.headers.forEach((h, ci) => {
+    if (Object.values(m).includes(ci)) return;
+    const per = {}; let ok = true, names = 0;
+    state.data.forEach(x => { const n = cleanSales(x.r[m.sales]), v = x.r[ci]; if (!n || v === '' || v == null) return; if (!(n in per)) { per[n] = v; names++; } else if (String(per[n]) !== String(v)) ok = false; });
+    if (ok && names >= 2) attr[ci] = per;
+  });
+  const hs = state.data.map(x => x.r[m.hari]).filter(v => v !== '' && v != null);
+  const hariStyle = hs.length && hs.every(v => /^\s*R0*[1-7]\s*$/i.test(String(v))) ? 'rayon' : hs.length && hs.every(v => /^\s*[1-7]\s*$/.test(String(v))) ? 'angka' : 'nama';
+  state.src = { headers: state.headers.slice(), rows: state.data.map(x => x.r.slice()), map: Object.assign({}, m), cleanName, attr, hariStyle, names: E.names.slice() };
+}
+function uploadSheet(R) {
+  const S = state.src; if (!S || state.mode === 'susun') return null;
+  const m = S.map, byKode = new Map(R.stores.map(st => [String(st.kode), st])), seen = new Set();
+  const hariOut = d => S.hariStyle === 'rayon' ? 'R0' + (d + 1) : S.hariStyle === 'angka' ? d + 1 : DAYS[d];
+  const out = [S.headers.slice()];
+  S.rows.forEach(r => {
+    const k = String(r[m.kode] == null ? '' : r[m.kode]).trim(); if (!k) return;
+    if (seen.has(k)) return; seen.add(k);
+    const row = r.slice(); const st = byKode.get(k);
+    if (st) {
+      const nm = salesName(st.sales), orig = S.names[st.sales];
+      row[m.sales] = nm !== orig ? nm : (S.cleanName[orig] != null ? S.cleanName[orig] : nm);
+      if (m.hari != null) row[m.hari] = hariOut(st.day);
+      if (m.jenis != null) row[m.jenis] = JKS.jenisOf(st);
+      Object.entries(S.attr).forEach(([ci, per]) => { if (orig in per) row[ci] = per[orig]; });
+    }
+    out.push(row);
+  });
+  const ws = XLSX.utils.aoa_to_sheet(out); ws['!cols'] = S.headers.map(h => ({ wch: Math.min(30, Math.max(8, String(h).length + 2)) }));
+  return ws;
+}
 
 // ---------- perbaiki otomatis ----------
 function busy(on, msg) { $('busy').hidden = !on; if (msg) $('busy-msg').textContent = msg; }
@@ -3119,6 +3317,7 @@ $('btn-fix').onclick = () => {
   if (maxDay >= 5) $('s-days').value = '6';
   $('s-nSales').value = E.names.length;
   state.names = E.names.slice(); state.edits = []; state.mode = 'perbaiki';
+  captureSource(E);
   const cfg = readForm(); cfg.nSales = E.names.length; placeDepot();
   busy(true, 'Memperbaiki JKS…');
   setTimeout(() => {
@@ -3182,7 +3381,7 @@ $('btn-export').onclick = () => {
   const jks = [['Salesman', 'Pekan', 'Hari', 'Urutan', 'Kode', 'Nama', 'Kelas', 'Jenis Kunjungan', 'Zona', 'Jam check-in', 'Jarak dari toko sebelumnya (km)', 'Jarak dari depo (km)', 'Kecamatan', 'Latitude', 'Longitude']];
   R.rows.forEach(x => jks.push([salesName(x.sales), x.week + 1, DAYS[x.day], x.urut, x.kode, x.nama, KL(x.kelas), x.jenis, x.zona, fmt(x.checkin), +x.legKm.toFixed(2), +x.distKm.toFixed(2), x.kec, x.lat, x.lng]));
   const ws1 = XLSX.utils.aoa_to_sheet(jks); ws1['!cols'] = [12, 7, 8, 7, 11, 28, 6, 10, 8, 11, 14, 12, 14, 11, 11].map(w => ({ wch: w })); ws1['!autofilter'] = { ref: 'A1:O' + jks.length };
-  XLSX.utils.book_append_sheet(wb, ws1, 'JKS');
+  XLSX.utils.book_append_sheet(wb, ws1, 'Jadwal per Kunjungan');
   // sheet Jalur: satu baris per jalur + link Google Maps
   const jl = [['Salesman', 'Pekan', 'Hari', 'Toko', 'Kapasitas', 'Check-in terakhir', 'Status', 'Tiba di depo', 'Jam kerja', 'Km sehari', 'Google Maps (bagian 1)', 'Google Maps (bagian 2)']];
   const links = [];
@@ -3195,7 +3394,7 @@ $('btn-export').onclick = () => {
   const sum = [['Salesman', 'Jumlah toko', 'Flagship Aktif', 'Flagship Pasif', 'GT A', 'GT B', 'GT C', 'Tidak transaksi', 'M1', 'M2C13', 'M2C24', 'Toko Dekat', 'Toko Sedang', 'Toko Jauh', 'Kunjungan per 4 pekan', 'Jalur', 'Rata-rata toko per hari', 'Rata-rata jam kerja per hari', 'Jam kerja terpanjang', 'Check-in terakhir paling lambat', 'km per 2 pekan', 'Jalur lewat batas', 'Jalur lebih dari kapasitas']];
   R.summary.forEach(s => sum.push([salesName(s.sales), s.toko, ...s.kelas, ...s.jenis, ...s.zona, s.kunjungan, s.jalur, +s.rataToko.toFixed(1), +s.rataJam.toFixed(2), +s.maxJam.toFixed(2), fmt(s.lastMax), Math.round(s.km2), s.lewat, s.lewatCap]));
   sum.push([], ['Pengaturan yang dipakai'],
-    ['Titik depo', c.depotLat + ', ' + c.depotLng], ['Jumlah salesman', c.nSales], ['Hari kerja per pekan', c.days], ['Berangkat', fmt(c.start)], ['Batas check-in terakhir', fmt(c.lastCheckin)],
+    ['Titik depo', c.depotLat + ', ' + c.depotLng], ['Jumlah salesman', c.nSales], ['Hari kerja per pekan', c.days], ['Berangkat dari kantor (depo)', fmt(c.start)], ['Batas check-in terakhir', fmt(c.lastCheckin)],
     ['Waktu di toko (menit)', c.svc], ['Istirahat (menit)', c.rest], ['Faktor belokan', c.roadFactor], ['Kecepatan', c.v1 + ' km/jam untuk ' + c.vBreak + ' km pertama, ' + c.v2 + ' km/jam sisanya'],
     ['Zona', 'Dekat ≤' + c.zoneNear + ' km, Sedang ≤' + c.zoneMid + ' km, Jauh >' + c.zoneMid + ' km'], ['Kapasitas per hari', 'Dekat ' + c.capNear + ', Sedang ' + c.capMid + ', Jauh ' + c.capFar],
     c.basis === 'ec' ? ['Jenis kunjungan', 'Dari rata-rata EC 3 bulan: EC ≥ ' + c.ecM1 + ' → M1, di bawahnya (termasuk EC 0) → M2'] : ['Jenis kunjungan per kelas', JKS.KELAS.map(k => KL(k) + ' ' + fLabel(c['f' + k])).join(', ')], ['Logika wilayah', [c.atomize ? 'atom toko satu titik' : '', c.gapAware ? 'hindari celah/sungai' : '', c.kecBlock ? 'blok kecamatan' : ''].filter(Boolean).join(', ') || 'standar'], ['Edit supervisor', state.edits.length + ' perubahan'], ['Disusun', new Date().toLocaleString('id-ID') + (state.sample ? ' (data contoh sintetis)' : ' · ' + state.fileName)]);
@@ -3207,7 +3406,9 @@ $('btn-export').onclick = () => {
     per.push([salesName(st.sales), DAYS[st.day], st.kode, st.nama, KL(st.kelas), JKS.jenisOf(st), st.zona, wk, st.freq, +st.distKm.toFixed(2), st.kec, st.asis, st.omset, isFinite(st.ec) ? st.ec : '', st.lat, st.lng, st.edited ? 'Ya' : '']);
   });
   const ws3 = XLSX.utils.aoa_to_sheet(per); ws3['!cols'] = [12, 8, 11, 28, 6, 10, 8, 12, 10, 12, 14, 14, 12, 10, 11, 11, 9].map(w => ({ wch: w }));
-  XLSX.utils.book_append_sheet(wb, ws3, 'Toko per Salesman');
+  XLSX.utils.book_append_sheet(wb, ws3, 'JKS per Toko');
+  const up = uploadSheet(R);
+  if (up) XLSX.utils.book_append_sheet(wb, up, 'Format Upload Sistem');
   const bad = [['Baris di file', 'Kode', 'Nama', 'Status', 'Masalah']];
   (R.issues || []).forEach(i => bad.push([i.baris, i.kode, i.nama, i.status, i.masalah]));
   R.warnings.forEach(w => bad.push(['', '', salesName(w.sales) + ' · Pekan ' + (w.week + 1) + ' · ' + DAYS[w.day], 'Jalur', w.jenis + ': ' + w.ket]));
@@ -3226,6 +3427,9 @@ $('btn-export').onclick = () => {
     const ws6 = XLSX.utils.aoa_to_sheet(ed); ws6['!cols'] = [5, 11, 28, 34, 34, 20].map(w => ({ wch: w }));
     XLSX.utils.book_append_sheet(wb, ws6, 'Riwayat Edit');
   }
+  // urutan sheet: satu baris per toko dulu, jadwal per kunjungan sesudahnya
+  const first = ['JKS per Toko', 'Format Upload Sistem'].filter(n => wb.SheetNames.includes(n));
+  wb.SheetNames = first.concat(wb.SheetNames.filter(n => !first.includes(n)));
   const d = new Date(), tag = d.getFullYear() + String(d.getMonth() + 1).padStart(2, '0') + String(d.getDate()).padStart(2, '0');
   saveWB(wb, 'JKS_Hasil_' + tag + '.xlsx');
 };
@@ -3233,11 +3437,34 @@ $('btn-export').onclick = () => {
 let toastT;
 function toast(msg) { let t = document.querySelector('.toast'); if (!t) { t = document.createElement('div'); t.className = 'toast'; t.setAttribute('role', 'status'); document.body.appendChild(t); } t.textContent = msg; clearTimeout(toastT); toastT = setTimeout(() => t.remove(), 3200); }
 
+// cek data dibuat satu baris ringkas; rinciannya dilipat
+function compactChecks() {
+  const el = $('checks'); if (!el || el.querySelector('.ck-head')) return;
+  const list = el.querySelector('.checks'); const h = el.querySelector('h3');
+  if (!list || !h) return;
+  const items = [...list.querySelectorAll('.check')];
+  const first = items[0]; const num = s => parseInt(String(s).replace(/\D/g, ''), 10) || 0;
+  const find = re => items.find(c => re.test(c.querySelector('span').textContent));
+  const outEl = find(/Dikeluarkan|Tidak bisa ditampilkan/), wrEl = find(/Catatan data/);
+  const out = outEl ? num(outEl.querySelector('b').textContent) : 0, wr = wrEl ? num(wrEl.querySelector('b').textContent) : 0;
+  const n = first ? first.querySelector('b').textContent : '';
+  const word = state.editMode ? 'toko terbaca' : 'toko siap disusun';
+  const notes = [out ? out + ' toko tidak masuk' : '', wr ? wr + ' catatan data' : ''].filter(Boolean).join(' · ') + (out || wr ? ' — lihat rincian di bawah' : '') || 'Tidak ada masalah data';
+  const head = document.createElement('div'); head.className = 'ck-head ' + (out || wr ? 'warn' : 'ok');
+  head.innerHTML = `<b>✓ ${esc(n)} ${word}</b><span>${esc(notes)}</span>`;
+  const more = document.createElement('details'); more.className = 'fold';
+  more.innerHTML = '<summary>Lihat rincian data</summary>';
+  h.remove(); [...el.childNodes].forEach(nd => more.appendChild(nd));
+  el.appendChild(head); el.appendChild(more);
+}
+new MutationObserver(compactChecks).observe($('checks'), { childList: true });
+renderSetSum();
 // buka dalam keadaan siap pakai: data contoh langsung disusun
 $('btn-sample').click();
 setTimeout(() => $('btn-run').click(), 50);
 })();
 </script>
+
 
 </body>
 </html>
